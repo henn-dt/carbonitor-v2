@@ -1,0 +1,167 @@
+events {
+    worker_connections 1024;
+}
+http 
+{
+    # logging to figure out loop situation
+    log_format debug_format '$remote_addr - $remote_user [$time_local] '
+                       '"$request" $status $body_bytes_sent '
+                       '"$http_referer" "$http_user_agent" '
+                       'FRONTEND_BASE_URL="$frontend_base_url" '
+                       'Original-URI="$request_uri" '
+                       'Rewritten-URI="$rewritten_uri" '
+                       'Final-Destination="$proxy_host$rewritten_uri"';
+    
+    map $request_uri $frontend_base_url {
+        default "${FRONTEND_BASE_URL}";
+    }
+
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    # Define upstream servers
+    upstream backend_servers {
+        server backend:${BACKEND_PORT};
+    }
+
+    upstream frontend_servers {
+        server frontend:${FRONTEND_PORT};
+    }
+
+
+    map $request_uri $rewritten_uri {
+    default $request_uri;
+    "~^(${FRONTEND_BASE_URL})(.*)$" $2;  # Extract the path after the base URL
+    }
+
+    server 
+    {
+        # Use the custom log format
+        access_log /var/log/nginx/access.log debug_format;
+        error_log /var/log/nginx/error.log debug;
+
+        merge_slashes on;
+        listen  ${NGINX_PORT};
+        server_name ${NGINX_HOST};
+        
+        # SSL configuration (optional)
+        ${SSL_CONFIG}
+
+        charset utf-8;
+        error_log /dev/stderr debug;
+        access_log /dev/stdout combined;
+
+
+        location / {
+            rewrite ^/$ $FRONTEND_BASE_URL break;
+            proxy_pass http://frontend_servers;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+
+            add_header X-Debug-Root $document_root;
+            add_header X-Debug-URI $uri;
+            add_header X-Debug-Path $request_filename;
+
+            add_header X-Debug-Original-URI $request_uri;
+            add_header X-Debug-Rewritten-URI $rewritten_uri;
+            add_header X-Debug-FRONTEND-Base-URL "${FRONTEND_BASE_URL}";
+            add_header X-Debug-Proxy-Destination "http://frontend_servers";
+
+
+            # Important for Vite dev mode
+            proxy_buffering off;
+            proxy_read_timeout 86400s;
+            proxy_send_timeout 86400s;
+    
+            # Set headers to help Vite accept the request
+            proxy_set_header Referer "http://localhost:${FRONTEND_PORT}${FRONTEND_BASE_URL}";
+
+            # Pass the base path as a header so the app knows its context
+            proxy_set_header X-Forwarded-Prefix "${FRONTEND_BASE_URL}";
+        }  
+
+        # location for backend server. 
+        location /api/ {
+            proxy_pass http://backend_servers/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+
+            proxy_read_timeout 300;
+            proxy_connect_timeout 300;
+            proxy_send_timeout 300; 
+            
+            add_header X-Debug-Path $request_uri;
+            add_header X-Debug-Original-URI $uri;
+            add_header X-Debug-Upstream $upstream_addr;
+            
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+         
+            add_header 'Access-Control-Allow-Origin' '*';
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, PUT, DELETE';
+            add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
+            add_header 'Access-Control-Allow-Credentials' 'true';
+        }
+
+        location /api/docs/
+        {
+            proxy_pass http://backend_servers/docs/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_read_timeout 300;
+            proxy_connect_timeout 300;
+            proxy_send_timeout 300; 
+            
+            add_header X-Debug-Path $request_uri;
+            add_header X-Debug-Original-URI $uri;
+            add_header X-Debug-Upstream $upstream_addr;
+            
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+         
+            add_header 'Access-Control-Allow-Origin' '*';
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, PUT, DELETE';
+            add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
+        }
+    
+        # Swagger JSON schema
+        location ~* ^/[^/]+/swagger\.json$ 
+        {
+            proxy_pass http://backend_servers;  
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+
+            sub_filter_types application/json;
+            sub_filter '"basePath": "/' '"basePath": "/api/';
+
+        }
+    
+        # Handle Swagger UI static files
+        location /swaggerui/ 
+        {
+            proxy_pass http://backend_servers/swaggerui/;  
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            # Add MIME types
+            types 
+            {
+                text/html html;
+                text/css css;
+                application/javascript js;
+                image/png png;
+                image/x-icon ico;
+            }
+        }
+    }
+}

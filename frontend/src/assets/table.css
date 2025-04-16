@@ -1,0 +1,218 @@
+
+.table-container {
+    width: 100%;
+    position: relative;
+  }
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+}
+
+thead {
+    height: 2rem;
+    padding: var(--spacing-md);
+    background-color: var(--color-background);
+    font-weight: normal;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+tr {
+    padding: var(--spacing-sm) var(--spacing-sm)
+}
+
+th {
+    text-align: left;
+}
+
+th span {
+    font-weight:500;
+}
+
+td {
+    padding: var(--spacing-md) var(--spacing-sm) var(--spacing-sm) var(--spacing-sm);
+    min-width: 3rem;
+}
+
+
+th.icon {
+    padding: var(--spacing-tiny) var(--spacing-sm)
+}
+
+/* sortable header styling */
+
+th.sortable {
+    position: relative;
+    cursor: pointer;
+    margin: 0 var(--spacing-tiny);
+}
+
+
+/* Hover effect for sortable headers */
+th.sortable:hover {
+    background-color: var(--color-highlight);
+}
+
+th.numeric {
+    text-align: right;
+}
+
+
+/* datatable  Conditional row styling */
+tr.checked {
+    background-color: var(--color-checked);
+    font-weight: 400;
+}
+
+tr.highlighted {
+    background-color: var(--color-highlight);
+}
+
+
+/* datatable  Conditional cell  styling */
+td.modified-value {
+    color: var(--color-modified);
+    font-weight: 400; /* Slightly bolder to emphasize */
+}
+
+td.important {
+    font-weight:500;
+}
+
+td.numeric {
+    
+    align-content: end;
+    text-align: right;
+}
+
+
+
+/* table checkbox styling */
+table input[type="checkbox"] {
+    appearance: none;
+    width: var(--icon-size);
+    height: var(--icon-size);
+    cursor: pointer;
+    background-image: url('../assets/icons/icon_checkbox_blank.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-left: var(--spacing-tiny);
+    display: inline-block
+}
+
+table input[type="checkbox"]:checked {
+    background-image: url('../assets/icons/icon_checkbox_check.svg');
+}
+
+table input[type="checkbox"]:focus {
+    outline: .1rem solid var(--color-active);
+    outline-offset: .1rem;
+}
+
+/* datatable Checkbox column styling */
+table th:first-child,
+table td:first-child {
+    max-width: 3*var(--icon-size);  
+
+}
+
+/* Icon positioning within sortable headers */
+.icon {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+
+/* List cell styling */
+table .categories-cell {
+    max-width: 8rem; /* Adjust based on your needs */
+}
+
+table .categories-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-tiny);
+    align-items: center;
+}
+
+
+/* Pagination Styles */
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background-color: var(--color-background);
+    border-radius: var(--rad);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pagination__button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--color-grey);
+    border-radius: var(--rad-small);
+    background-color: var(--color-light);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pagination__button:hover:not(:disabled) {
+    background-color: var(--color-background);
+    border-color: var(--color-grey);
+}
+
+.pagination__button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination__numbers {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-tiny);
+}
+
+.pagination__number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--color-grey);
+    border-radius: var(--rad-small);
+    background-color: var(--color-light);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pagination__number:hover:not(.pagination__number--active) {
+    background-color: var(--color-background);
+    border-color: var(--color-grey);
+}
+
+.pagination__number--active {
+    background-color: var(--color-active);
+    color: var(--color-light);
+    border-color: var(--color-active);
+    cursor: default;
+}
+
+.pagination__ellipsis {
+    padding: 0 var(--spacing-sm);
+    color: var(--color-grey);
+}
+
+.pagination__info {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    color: var(--color-grey);
+    font-size: var(--font-size-small);
+}

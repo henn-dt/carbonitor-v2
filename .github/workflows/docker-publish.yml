@@ -1,0 +1,54 @@
+name: Docker Build and Publish
+
+on:
+#  push:
+#    branches: [ "main" ]  # or your default branch
+  pull_request:
+    branches: [ "main" ]
+    types: [closed]
+  workflow_dispatch:
+
+
+env:
+  REGISTRY: ghcr.io
+  ORGANISATION: henn-dt
+  APP_NAME: carbonitor
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push nginx image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./nginx
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.ORGANISATION }}/${{ env.APP_NAME }}-nginx:latest
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./backend
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.ORGANISATION }}/${{ env.APP_NAME }}-backend:latest
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./frontend
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.ORGANISATION }}/${{ env.APP_NAME }}-frontend:latest

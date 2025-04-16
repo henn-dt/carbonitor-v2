@@ -1,0 +1,84 @@
+# example for production compose
+services:
+  backend:
+    build: ./backend
+    container_name: carbonitor-backend 
+    restart: always
+    environment:
+      - USE_EXTERNAL_DB=false
+      - EXTERNAL_DATABASE_URL=mysql+pymysql://carbonitor:henn@mysql_dt.henn.com/henn_carbonitor
+    volumes:
+      - ./backend:/backend
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  frontend:
+    build: ./frontend
+    container_name: carbonitor-frontend
+    volumes:
+      - ./frontend:/frontend
+      - /frontend/node_modules
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+  nginx:
+    build: ./nginx
+    container_name: carbonitor-proxy
+    ports:
+      - "${NGINX_PORT:-8100}:${NGINX_PORT:-8100}"
+      - "${NGINX_SSL_PORT:-443}:${NGINX_SSL_PORT:-443}"  # Optional SSL port
+    environment:
+      - NGINX_PORT=${NGINX_PORT:-8100}
+      - NGINX_HOST=${NGINX_HOST:-localhost}
+      - FRONTEND_PORT=${FRONTEND_PORT:-8080}
+      - BACKEND_PORT=${BACKEND_PORT:-5000}
+      - NGINX_SSL_PORT=${NGINX_SSL_PORT:-443}
+      - SSL_CERT_PATH=${SSL_CERT_PATH:-}
+      - SSL_KEY_PATH=${SSL_KEY_PATH:-}
+    volumes:
+      - ./nginx/ssl:/etc/nginx/ssl:ro  # Optional: Mount SSL certificates
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - app-network
+
+  db:
+    image: mysql:8.0
+    container_name: carbonitor-mysql
+    restart: always
+    command:  >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --bind-address=0.0.0.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-carbonitor_db}
+      MYSQL_USER: ${MYSQL_USER:-myuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-mypassword}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - .backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+#    ports:
+#      - "6666:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 10
+    networks:
+      - app-network
+
+volumes:
+  mysql_data:
+
+networks:
+  app-network:
+    driver: bridge
+

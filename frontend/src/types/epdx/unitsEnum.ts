@@ -1,0 +1,15 @@
+export const units = [
+    "m",
+    "m2",
+    "m3",
+    "kg",
+    "tones",
+    "pcs",
+    "kwh",
+    "l",
+    "m2r1",
+    "km",
+    "tones_km",
+    "kgm3",
+    "unknown",
+  ] as const;

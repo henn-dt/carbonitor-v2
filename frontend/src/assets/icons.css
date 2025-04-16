@@ -1,0 +1,306 @@
+/* icons and other shared resources*/
+
+@import './base.css';
+
+.app-logo {
+    background-image: url('../assets/ci/app_logo.svg');
+    width: 2rem;
+    height: 2rem;
+    object-fit: contain;  /* Ensure the SVG scales properly */
+    background-repeat: no-repeat;
+    flex-shrink: 0;
+    flex-grow: 0;
+}
+
+.app-title {
+    background-image: url('../assets/ci/app_title.svg');
+    height: 2rem;
+    width: 150px;
+    object-fit: contain;  /* Ensure the SVG scales properly */
+    background-repeat: no-repeat;
+    flex-shrink: 0;
+    flex-grow: 0;
+    
+}
+
+.icon {
+    width: var(--icon-size);          /* Set the desired width */
+    height: var(--icon-size);         /* Set the desired height */
+    object-fit: contain;  /* Ensure the SVG scales properly */
+    padding: var(--spacing-tiny);
+    background-repeat: no-repeat;
+    flex-shrink: 0;
+    flex-grow: 0;
+}
+
+.icon.large {
+    width: var(--icon-size-large);          /* Set the desired width */
+    height: var(--icon-size-large);  
+
+}
+
+.icon.form {
+    width: 20px;
+    position: absolute;
+    z-index: 1;
+    left: 12px;
+    bottom: 9px;
+}
+
+
+/* Optional hover effects */
+.icon:hover {
+    transform: scale(1.1); /* Slightly enlarge on hover */
+    transition: transform var(--dur) ease;
+}
+
+.icon.menu {
+    background-image: url('../assets/icons/icon_menu.svg');
+}
+
+.icon.new {
+    background-image: url('../assets/icons/icon_new.svg');
+}
+
+.icon.back {
+    background-image: url('../assets/icons/icon_arrow_back.svg');
+}
+
+.icon.close {
+    background-image: url('../assets/icons/icon_x.svg');
+}
+
+.icon.remove {
+    background-image: url('../assets/icons/icon_x.svg');
+    filter: var(--filter-delete);
+}
+
+.icon.dropdown {
+    background-image: url('../assets/icons/icon_chevron_down.svg');
+}
+
+.icon.collapse-down {
+    background-image: url('../assets/icons/icon_chevron_down.svg');
+}
+
+.icon.collapse-up {
+    background-image: url('../assets/icons/icon_chevron_up.svg');
+}
+
+.icon.collapse-left {
+    background-image: url('../assets/icons/icon_chevron_left.svg');
+}
+
+.icon.collapse-right {
+    background-image: url('../assets/icons/icon_chevron_right.svg');
+}
+
+.icon.collapse-plus {
+    background-image: url('../assets/icons/icon_plus.svg');
+}
+
+.icon.collapse-minus {
+    background-image: url('../assets/icons/icon_minus.svg');
+}
+
+.icon.checkbox-blank {
+    background-image: url('../assets/icons/icon_checkbox_blank.svg');
+}
+
+.icon.checkbox-check {
+    background-image: url('../assets/icons/icon_checkbox_check.svg');
+}
+
+.icon.clone {
+    background-image: url('../assets/icons/icon_duplicate.svg');
+}
+
+.icon.edit {
+    background-image: url('../assets/icons/icon_edit.svg');
+}
+
+.icon.export {
+    background-image: url('../assets/icons/icon_export.svg');
+}
+
+.icon.filter {
+    background-image: url('../assets/icons/icon_funnel.svg');
+}
+
+.icon.columns {
+    background-image: url('../assets/icons/icon_columns.svg');
+}
+
+
+.icon.sliders {
+    background-image: url('../assets/icons/icon_sliders_vertical.svg');
+}
+
+.icon.show {
+    background-image: url('../assets/icons/icon_eye.svg');
+}
+
+.icon.search {
+    background-image: url('../assets/icons/icon_magnifier.svg');
+}
+
+.icon.revert {
+    background-image: url('../assets/icons/icon_revert.svg');
+}
+
+.icon.sort {
+    background-image: url('../assets/icons/icon_sort.svg');
+}
+
+.icon.status {
+    background-image: url('../assets/icons/icon_status_success.svg');
+}
+
+.icon.status-success {
+    background-image: url('../assets/icons/icon_status_success.svg');
+    filter: var(--filter-valid)
+}
+
+.icon.sync {
+    background-image: url('../assets/icons/icon_sync.svg');
+}
+
+.icon.delete {
+    background-image: url('../assets/icons/icon_trash.svg');
+}
+
+.icon.home {
+    background-image: url('../assets/icons/icon_home.svg');
+}
+
+.icon.more {
+    background-image: url('../assets/icons/icon_more.svg');
+}
+
+.icon.collapse-right {
+    background-image: url('../assets/icons/icon_collapse_right.svg');
+}
+
+.icon.collapse-left {
+    background-image: url('../assets/icons/icon_collapse_left.svg');
+}
+
+.icon.product {
+    background-image: url('../assets/icons/icon_materials.svg');
+}
+
+.icon.buildup {
+    background-image: url('../assets/icons/icon_wall.svg');
+}
+
+.icon.model {
+    background-image: url('../assets/icons/icon_building.svg');
+}
+
+.icon.category {
+    background-image: url('../assets/icons/icon_category.svg');
+}
+
+.icon.logout {
+    background-image: url('../assets/icons/icon_logout.svg');
+}
+
+.icon.admin {
+    background-image: url('../assets/icons/icon_settings.svg');
+}
+
+
+/* indicators icons */
+
+.icon.gwp {
+    background-image: url('../assets/icons/icon_gwp.svg');
+}
+
+.icon.gwp_fos {
+    background-image: url('../assets/icons/icon_gwp_fossil.svg');
+}
+
+.icon.gwp_bio {
+    background-image: url('../assets/icons/icon_gwp_biogenic.svg');
+}
+
+.icon.gwp_lul {
+    background-image: url('../assets/icons/icon_gwp_land_use.svg');
+}
+
+.icon.fw {
+    background-image: url('../assets/icons/icon_water.svg');
+}
+
+
+/* Module A1-3 */
+.icon.Production {
+    background-image: url('../assets/icons/icon_production.svg');
+}
+
+/* Module A4 */
+.icon.transport {
+    background-image: url('../assets/icons/icon_transport.svg');
+}
+
+/* Module A5 */
+.icon.Construction {
+    background-image: url('../assets/icons/icon_construction_crane.svg');
+}
+
+
+/* Module B1-B5 */
+.icon.Operation {
+    background-image: url('../assets/icons/icon_operation_maintenance.svg');
+}
+
+/* Module B6 Operational Energy */
+.icon.emissions {
+    background-image: url('../assets/icons/icon_emissions.svg');
+}
+
+/* Module B7 Operational Water */
+.icon.water {
+    background-image: url('../assets/icons/icon_water.svg');
+}
+
+
+/* Module C1 */
+.icon.Disassembly {
+    background-image: url('../assets/icons/icon_wrecking_ball.svg');
+}
+
+/* Module C2 */
+.icon.waste-transport {
+    background-image: url('../assets/icons/icon_truck-garbage.svg');
+}
+
+/* Module C3 */
+.icon.process {
+    background-image: url('../assets/icons/icon_process.svg');
+}
+
+/* Module C4 */
+.icon.Disposal {
+    background-image: url('../assets/icons/icon_waste_disposal.svg');
+}
+
+/* Module D */
+.icon.Reuse {
+    background-image: url('../assets/icons/icon_recycle.svg');
+}
+
+.icon.email {
+    background-image: url('../assets/icons/icon_email.svg');
+}
+
+.icon.password {
+    background-image: url('../assets/icons/icon_password.svg');
+}
+
+.icon.user {
+    background-image: url('../assets/icons/icon_user.svg');
+}
+
+
+

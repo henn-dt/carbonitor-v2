@@ -1,0 +1,112 @@
+/*base.css */
+:root {
+
+  /* general colors: */
+  --color-text-dark: #222222;
+  --color-text-light: #f8f8f8;
+  --color-text-grey: #c6c0c7;
+  --color-dark: #2f2f2f;
+  --color-light: #F5F5F5;
+  --color-grey: #C8D4DF;
+  --color-white: #fff;
+
+  /* text, spacing, etc: */
+  --font-fam: 'Roboto', sans-serif, Ubuntu, Cantarell;
+  --font-size-large: 1.2rem;
+  --font-size-small: .8rem;
+  --font-size-mid: 0.9rem;
+  --font-size: 1rem;
+  --icon-size: 1rem;
+  --icon-size-large: 1.5rem;
+  --spacing-tiny: .2rem;
+  --spacing-sm: .5rem;
+  --spacing-cozy: .75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --size-btn-height: 2.5rem;
+  --rad: .7rem;
+  --rad-small: .4rem;
+  --transition-timing: ease-out;
+  --dur: .3s;
+}
+
+/* semantic color variables for this project */
+:root {
+  --color-primary: #609c81 ;
+  --color-active: #92C5AE;
+  --color-header: #e3f2fd;
+  --color-checked: #D1DEE8;
+  --color-highlight: #CDE2D7;
+  --color-background: #e6f1eb;
+  --color-delete: #c51162;
+  --color-error: #e74c3c; 
+  /* css filters for theme colors */
+  --filter-primary: invert(57%) sepia(19%) saturate(679%) hue-rotate(101deg) brightness(96%) contrast(84%);
+  --filter-active: invert(82%) sepia(14%) saturate(553%) hue-rotate(101deg) brightness(87%) contrast(92%);
+  /* status colors: */
+  --color-valid: #92C5AE;
+  --color-invalid: #B0B0B0;
+  --color-benchmark: #E84F12;
+  --color-modified: #114F25;
+  /* css filters for status colors, calculated with this page: https://isotropic.co/tool/hex-color-to-css-filter/ */
+  --filter-valid: invert(75%) sepia(25%) saturate(301%) hue-rotate(101deg) brightness(93%) contrast(95%);
+  --filter-invalid: invert(64%) sepia(0%) saturate(0%) hue-rotate(150deg) brightness(107%) contrast(102%);
+  --filter-benchmark:  invert(35%) sepia(65%) saturate(1947%) hue-rotate(354deg) brightness(93%) contrast(95%);
+  --filter-modified: invert(21%) sepia(10%) saturate(5036%) hue-rotate(93deg) brightness(92%) contrast(87%); 
+  --filter-delete: invert(22%) sepia(54%) saturate(5040%) hue-rotate(320deg) brightness(77%) contrast(102%);
+  /* color palette for charts, categories, etc: */
+  --color-1: #FF6B6B;
+  --color-2: #4ECDC4;
+  --color-3: #45B7D1;
+  --color-4: #96CEB4;
+  --color-5: #FFEEAD;
+  --color-6: #D4A5A5;
+  --color-7: #9FA8DA;
+  --color-8: #90A4AE;
+  --color-9: #ba68c8;
+  --color-10: #eeeeee;
+  --color-11: #90a4ae;
+  --color-12: #546e7a;
+
+  --section-gap: 10rem;
+}
+
+
+*,
+*::before,
+*::after {
+  * {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: var(--font-fam);
+
+  }
+}
+
+
+
+body {
+  margin: 0 auto;
+  color: var(--color-text-dark);
+  background-color: var(--color-background);
+  font-size : var(--font-size);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  height: 100vh;
+  max-height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#app {
+  display: flex;
+  width: 100%;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+}
+

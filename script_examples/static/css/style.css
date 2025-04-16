@@ -1,0 +1,748 @@
+/* CSS reset and global styles: */
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: var(--font-fam);
+  }
+
+
+:root {
+
+    /* general colors: */
+    --color-dark: #2f2f2f;
+    --color-light: #fff;
+    --color-grey: #777;
+    --color-active: #2D9BF0;
+    --color-header: #e3f2fd;
+    --color-checked: #D1DEE8;
+    --color-highlight: #adddff;
+    /* status colors: */
+    --color-valid: #A7D477;
+    --color-invalid: #FF748B;
+    --color-benchmark: #c51162;
+    --color-modified: #ff3eb5;
+    /* css filters for status colors, calculated with this page: https://isotropic.co/tool/hex-color-to-css-filter/ */
+    --filter-valid: invert(85%) sepia(19%) saturate(853%) hue-rotate(41deg) brightness(92%) contrast(90%);
+    --filter-invalid: invert(55%) sepia(62%) saturate(961%) hue-rotate(310deg) brightness(106%) contrast(101%);
+    --filter-benchmark: invert(17%) sepia(94%) saturate(3124%) hue-rotate(319deg) brightness(84%) contrast(100%);
+    --filter-modified: invert(42%) sepia(95%) saturate(3197%) hue-rotate(301deg) brightness(104%) contrast(101%); 
+    /* color palette for charts, categories, etc: */
+    --color-1: #FF6B6B;
+    --color-2: #4ECDC4;
+    --color-3: #45B7D1;
+    --color-4: #96CEB4;
+    --color-5: #FFEEAD;
+    --color-6: #D4A5A5;
+    --color-7: #9FA8DA;
+    --color-8: #90A4AE;
+    --color-9: #ba68c8;
+    --color-10: #eeeeee;
+    --color-11: #90a4ae;
+    --color-12: #546e7a;
+    /* text, spacing, etc: */
+    --font-fam: 'Roboto', sans-serif;
+    --font-size-large: 1.2rem;
+    --font-size-small: .8rem;
+    --icon-size: 1rem;
+    --icon-size-large: 1.5rem;
+    --spacing-tiny: .2rem;
+    --spacing-sm: .5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --rad: .7rem;
+    --rad-small: .4rem;
+    --dur: .3s;
+
+    
+
+  }
+
+html {
+    font-size: 16px;
+    background-color: var(--color-light);
+}
+
+ 
+body {
+    margin: 0 auto;
+    background-color: var(--color-light);
+}
+
+h1 {
+    font-size: var(--font-size-large);
+    font-weight: 400;
+}
+
+
+/* layout structure: */
+
+.container {
+    display: flex;
+    max-width: 100vw;
+    padding: var(--spacing-md);
+}
+
+.sidebar {
+    display: block;
+    min-width: 200px;
+    padding: var(--spacing-md);
+    height: 100vh;
+    overflow: scroll;
+    overflow-x: hidden;
+}
+
+.main-content {
+    width: 100%;
+    display: block;
+    flex: 1;
+    padding: var(--spacing-md);
+
+}
+
+.collection-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-tiny);
+    margin: var(--spacing-md);
+}
+
+.scrollable-container {
+    padding: var(--spacing-md);
+    overflow: scroll;
+    max-height: 25vh;
+    max-width: 100%;
+}
+
+
+
+/* icons and other shared resources*/
+
+.icon {
+    width: var(--icon-size);          /* Set the desired width */
+    height: var(--icon-size);         /* Set the desired height */
+    object-fit: contain;  /* Ensure the SVG scales properly */
+    padding: var(--spacing-tiny);
+    background-repeat: no-repeat;
+    flex-shrink: 0;
+    flex-grow: 0;
+}
+
+.icon.large {
+    width: var(--icon-size-large);          /* Set the desired width */
+    height: var(--icon-size-large);  
+
+}
+
+/* Optional hover effects */
+.icon:hover {
+    transform: scale(1.1); /* Slightly enlarge on hover */
+    transition: transform var(--dur) ease;
+}
+
+
+.icon.new {
+    background-image: url('/static/icons/icon_new.svg');
+}
+
+.icon.back {
+    background-image: url('/static/icons/icon_arrow_back.svg');
+}
+
+.icon.checkbox-blank {
+    background-image: url('/static/icons/icon_checkbox_blank.svg');
+}
+
+.icon.checkbox-check {
+    background-image: url('/static/icons/icon_checkbox_check.svg');
+}
+
+.icon.clone {
+    background-image: url('/static/icons/icon_duplicate.svg');
+}
+
+.icon.edit {
+    background-image: url('/static/icons/icon_edit.svg');
+}
+
+.icon.export {
+    background-image: url('/static/icons/icon_export.svg');
+}
+
+.icon.show {
+    background-image: url('/static/icons/icon_eye.svg');
+}
+
+.icon.search {
+    background-image: url('/static/icons/icon_magnifier.svg');
+}
+
+.icon.revert {
+    background-image: url('/static/icons/icon_revert.svg');
+}
+
+.icon.sort {
+    background-image: url('/static/icons/icon_sort.svg');
+}
+
+.icon.status-success {
+    background-image: url('/static/icons/icon_status_success.svg');
+    filter: var(--filter-valid)
+}
+
+.icon.sync {
+    background-image: url('/static/icons/icon_sync.svg');
+}
+
+.icon.delete {
+    background-image: url('/static/icons/icon_trash.svg');
+}
+
+.icon.home {
+    background-image: url('/static/icons/icon_home.svg');
+}
+
+.icon.product {
+    background-image: url('/static/icons/icon_materials.svg');
+}
+
+.icon.buildup {
+    background-image: url('/static/icons/icon_window.svg');
+}
+
+.icon.admin {
+    background-image: url('/static/icons/icon_settings.svg');
+}
+
+.icon.construction {
+    background-image: url('/static/icons/icon_construction.svg');
+}
+
+.icon.production {
+    background-image: url('/static/icons/icon_production.svg');
+}
+
+.icon.operation {
+    background-image: url('/static/icons/icon_building.svg');
+}
+
+.icon.eol {
+    background-image: url('/static/icons/icon_demolition.svg');
+}
+
+.icon.reuse {
+    background-image: url('/static/icons/icon_reuse.svg');
+}
+
+/* navigation menu */
+
+.nav-menu {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.nav-item {
+    display: flex;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    border-radius: var(--rad-small);
+    text-decoration: none;
+    font-size: var(--font-size-large);
+    justify-content: left;
+    align-items: center;
+    min-height: calc(var(--icon-size-large) + (var(--spacing-sm) * 2));
+}
+
+.nav-item .icon {
+    transform: none;
+    width: var(--icon-size-large);          /* Set the desired width */
+    height: var(--icon-size-large);   
+}
+
+.nav-item .text {
+    white-space: nowrap;
+    border: 0;
+}
+
+.nav-item:hover {
+    background-color: var(--color-highlight);
+    transition: transform var(--dur) ease;
+}
+
+.nav-item.active {
+    background-color: var(--color-active);
+    color: var(--color-light);
+    font-weight: bold
+}
+
+/* toggles */
+
+
+.toggle-button {
+    display: flex;
+    padding: var(--spacing-sm);
+    border-radius: var(--rad);
+    border: 1px solid var(--color-grey);
+    background: var(--color-light);
+    text-decoration: none;
+    gap: var(--spacing-tiny);
+    align-items: center;
+    cursor: context-menu;
+}
+
+.toggle-button.active {
+    background: var(--color-active);
+    color: var(--color-light);
+    font-weight: bold;
+    border: 0;
+}
+
+.toggle-button .icon {
+    transform: none;
+    width: var(--icon-size-large);
+    height: var(--icon-size-large);
+}
+
+.toggle-button .text {
+    white-space: nowrap;
+    justify-content: center;
+    overflow: hidden;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+}
+
+.toggle-button.compact {
+    width: 4rem;
+    justify-content: center;
+}
+
+.toggle-button.compact .text {
+    display: none
+}
+
+.toggle-button.more {
+    cursor: pointer;
+}
+
+.toggle-button:hover {
+    background-color: var(--color-highlight);
+    border-color: var(--color-grey);
+    transition: transform var(--dur) ease;
+}
+
+
+/* status or classification chips */
+
+.chip {
+    padding: var(--spacing-tiny) var(--spacing-sm);
+    border-radius: var(--rad-small);
+    font-size: var(--font-size-small);
+    color: var(--color-grey);
+    background-color: var(--color-light);
+    border: 1px solid var(--color-grey);
+    min-width: 3.5rem;
+    font-size: var(--font-size-small);
+    justify-content: center;
+    padding: var(--spacing-tiny);
+    align-items: center;
+    text-align: center;
+    cursor: context-menu;
+}
+
+.chip.category:hover {
+    background-color: var(--color-highlight);
+    border-color: var(--color-grey);
+    transition: transform var(--dur) ease;
+}
+
+/* More indicator chip */
+.chip.category.more {
+    background-color: var(--color-grey);
+    color: var(--color-light);
+    cursor: help;
+}
+
+/* Optional: Tooltip for the more indicator */
+.chip.category.more:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-dark);
+    color: var(--color-light);
+    padding: var(--spacing-tiny);
+    border-radius: var(--rad-small);
+    font-size: var(--font-size-small);
+    white-space: nowrap;
+}
+
+
+/* action button chip style */
+
+.chip-button {
+    display: flex;
+    min-width: 5rem;
+    max-width: 8rem;
+    height: 1.6rem;
+    border-radius: var(--rad-small);
+    border: 1px solid var(--color-grey);
+    background: var(--color-light);
+    cursor: context-menu;
+    align-items: center;
+    justify-content: left;
+    gap: var(--spacing-tiny);  /* Space between text and icon */
+    padding: var(--spacing-tiny) ;
+}
+
+/* Icons inside buttons don't get individual hover effects */
+.chip-button .icon {
+    transform: none; /* Override the hover effect */
+
+}
+
+.chip-button .text {
+    
+    justify-content: center;
+    overflow: hidden;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+    padding: var(--spacing-tiny) ;
+    flex-shrink: 1;
+}
+
+
+
+/* Optional: hover state */
+.chip-button:hover {
+    background-color: var(--color-highlight);
+    border-color: var(--color-grey);
+    transition: transform var(--dur) ease;
+}
+
+
+/* data tables */
+
+/* Base table styles */
+
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+}
+
+thead {
+    background-color: var(--color-header);
+}
+
+tr {
+    padding: var(--spacing-sm) var(--spacing-lg)
+}
+
+th {
+    text-align: left;
+}
+
+td {
+    padding: var(--spacing-md);
+    min-width: 3rem;
+}
+
+
+/* sortable header styling */
+
+th.sortable {
+    position: relative;
+    cursor: pointer;
+    margin: 0 var(--spacing-tiny);
+}
+
+
+/* Hover effect for sortable headers */
+th.sortable:hover {
+    background-color: var(--color-highlight);
+}
+
+
+/* datatable  Conditional row styling */
+tr.checked {
+    background-color: var(--color-checked);
+    font-weight: 400;
+}
+
+tr.highlighted {
+    background-color: var(--color-highlight);
+}
+
+
+/* datatable  Conditional cell  styling */
+td.modified-value {
+    color: var(--color-modified);
+    font-weight: 400; /* Slightly bolder to emphasize */
+}
+
+td.important {
+    font-weight: bold;
+}
+
+td.numeric {
+    text-align: right;
+}
+
+
+
+/* checkbox styling */
+table input[type="checkbox"] {
+    appearance: none;
+    width: var(--icon-size);
+    height: var(--icon-size);
+    cursor: pointer;
+    background-image: url('/static/icons/icon_checkbox_blank.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-left: var(--spacing-tiny);
+    display: inline-block
+}
+
+table input[type="checkbox"]:checked {
+    background-image: url('/static/icons/icon_checkbox_check.svg');
+}
+
+table input[type="checkbox"]:focus {
+    outline: .1rem solid var(--color-active);
+    outline-offset: .1rem;
+}
+
+/* datatable Checkbox column styling */
+table th:first-child,
+table td:first-child {
+    max-width: 3*var(--icon-size);  
+
+}
+
+/* Icon positioning within sortable headers */
+.icon {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* List cell styling */
+table .categories-cell {
+    max-width: 8rem; /* Adjust based on your needs */
+}
+
+table .categories-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-tiny);
+    align-items: center;
+}
+
+
+/* charts */
+
+.chart-container {  /* contains a tytle and a chart, one on top of the other. */
+    display: block;
+    width: fit-content
+}
+
+
+/* Bar Chart Styles */
+
+.bar-chart-container {
+    height: 30rem;
+    max-width: 30rem;
+    width: fit-content;
+    margin: var(--spacing-lg) auto;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    border-bottom: 2px solid var(--color-dark);
+    border-left: 2px solid var(--color-dark);
+    position: relative;
+}
+
+.bar-container {
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    gap: var(--spacing-md);
+    position: relative;
+}
+
+.bar {
+    width: 3rem;
+    height: var(--bar-height);
+    background-color: var(--color-light);
+    border: 1px solid var(--color-grey);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    transition: height var(--dur) ease-in-out;
+}
+
+.bar:hover {
+    background-color: var(--color-highlight);
+}
+
+.bar-value {
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--color-dark);
+    white-space: nowrap;
+}
+
+.bar-label {
+    position: absolute;
+    bottom: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--color-dark);
+    white-space: nowrap;
+}
+
+.benchmark-line {
+    position: absolute;
+    width: 100%  ; 
+    height: 2px;
+    background: var(--color-benchmark);
+    left: 0;
+    top: calc(100% - var(--benchmark-height));
+    z-index: 1;
+}
+
+/* Donut Chart Styles */
+.donut-chart-container {
+    height: 30rem;
+    max-width: 30rem;
+    width: fit-content;
+    margin: var(--spacing-lg) auto;
+    padding: var(--spacing-md);
+    position: relative;
+}
+
+.donut-chart {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.donut-segment {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    clip: rect(0, 30rem, 30rem, 15rem);
+    transform: rotate(var(--rotation));
+}
+
+.donut-hole {
+    width: 60%;
+    height: 60%;
+    border-radius: 50%;
+    background: white;
+    position: absolute;
+    z-index: 2;
+}
+
+.legend {
+    margin-top: var(--spacing-md);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    justify-content: center;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.legend-color {
+    width: 1rem;
+    height: 1rem;
+    border-radius: var(--rad);
+}
+
+
+/* Search bar Styling */
+
+.search-container {
+    position: relative;
+    min-width: 12rem;
+    max-width: 24rem; /* Adjust as needed */
+    display: inline-flex;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--rad);
+    border: 1px solid var(--color-grey);
+    background: var(--color-light);
+    cursor: pointer;
+    gap: var(--spacing-sm);  /* Space between text and icon */
+}
+
+
+.search-input {
+    width: 100%;
+    padding: 0 0 0 var(--spacing-lg); /* Extra padding-left for icon */
+    cursor: text;
+
+}
+
+.search-input::placeholder {
+    color: var(--color-grey);
+}
+
+/* status colors */
+.valid {
+    background-color: var(--color-valid);
+    border: 0;
+}
+
+.archived {
+    background-color: var(--color-invalid);
+    font-style: italic;
+    border: 0;
+}
+
+.benchmark {
+    background-color: var(--color-benchmark);
+    border: 0;
+    font-weight: 500;
+    color: var(--color-light);
+}
+
+
+@media (max-width: 48rem){
+    .sidebar {
+        width: 4rem;
+        min-width: 4rem !important;
+        transition: transform var(--dur) ease;
+        
+    }
+
+    .nav-item .text {
+        display: none;
+        transition: transform var(--dur) ease;
+    }
+
+    .nav-item {
+        align-items: center;
+        justify-content: center;
+        flex-wrap: nowrap;
+        overflow: hidden;
+        /* Keep padding consistent */
+        padding: var(--spacing-sm);
+    }
+}

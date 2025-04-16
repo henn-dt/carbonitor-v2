@@ -1,0 +1,108 @@
+/*main.css */
+@import './base.css';
+
+#app {
+  margin: 0 auto;
+  font-weight: normal;
+}
+
+html {
+  font-size: var(--font-size);
+  background-color: var(--color-light);
+}
+
+
+h1 {
+  font-size: var(--font-size-large);
+  font-weight: 400;
+  margin-bottom: var(--spacing-sm);
+}
+
+
+h2 {
+  font-size: var(--font-size);
+  font-weight: 400;
+  color: var(--color-text-dark);
+  margin-bottom: var(--spacing-sm);
+}
+
+a {
+  color: var(--color-text-dark)
+}
+
+span {
+  font-size: var(--font-size);
+}
+
+
+.title {
+  text-align: center;
+  font-size: var(--font-size-large);
+  margin-bottom: var(--spacing-lg);
+  color: var(--color-text-dark);
+}
+
+.subtitle {
+  text-align: center;
+  font-size: var(--font-size);
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-grey);
+}
+
+.description {
+  border: 0px solid var(--color-grey);
+  padding: var(--spacing-tiny) 12px;
+  padding-top: 0;
+  font-style: italic;
+  height: var(--font-size);
+  
+}
+
+input , select, textarea {
+  background-color: var(--color-light);
+  padding: 10px 12px;
+  border: 1px solid var(--color-grey);
+  border-radius: var(--rad-small);
+  width: 100%;
+  color: var(--color-primary);
+  height: var(--size-btn-height);
+  line-height: var(--font-size);
+  font-size: 14px;
+  transition: all 0.3s cubic-bezier(0.15, 0.83, 0.66, 1);
+  outline: none;
+  filter: drop-shadow(0px 1px 0px var(--color-light))
+  drop-shadow(0px 1px 0.5px rgba(239, 239, 239, 0.5));
+}
+
+input:focus,
+textarea:focus {
+  border: 1px solid transparent;
+  box-shadow: 0px 0px 0px 2px var(--color-active);
+  background-color: transparent;
+}
+
+select {
+  cursor: pointer;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+label {
+  color: var(--color-text-grey);
+  font-size: var(--font-size-small);
+  margin-bottom: var(--spacing-sm)
+}
+
+.cursive {
+  font-style: italic;
+}
+
+.empty-value {
+  font-style: italic;
+  color: var(--color-text-grey);
+  margin-bottom: var(--spacing-md);
+
+}

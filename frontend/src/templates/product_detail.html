@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbonitor Product Detail</title>
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body class="container">
+<div class="sidebar">
+    <div class="nav-menu">
+
+        <div class="nav-item">
+            <span class="icon home"></span>
+            <span class="text">Home</span>
+        </div>
+        <div class="separator"></div>
+        <div class="nav-item active">
+            <span class="icon product"></span>
+            <span class="text">Products</span>
+        </div>
+        <div class="nav-item">
+            <span class="icon buildup"></span>
+            <span class="text">Buildups</span>
+        </div>
+        <div class="nav-item">
+            <span class="icon model"></span>
+            <span class="text">Models</span>
+        </div>
+        <div class="separator"></div>
+        <div class="nav-item">
+            <span class="icon category"></span>
+            <span class="text">Categories</span>
+        </div>
+        <div class="separator"></div>
+        <div class="nav-item">
+            <span class="icon admin"></span>
+            <span class="text">Settings</span>
+        </div>
+        <div class="nav-item hamburger">
+            <span class="icon menu"></span>
+        </div>
+    </div>
+</div>
+<div class="main-content"> 
+    <!-- Header and Title -->
+    <h1 class="title">Product Detail</h1>
+    <h2 class="subtitle">this page lists all the properties of a single product</h2>
+
+    <!-- Sticky Row with toggles for modules and environmental indicators -->
+    <div class="flex-row sticky">
+        <div class="content-box">
+        <span class="content-title">Modules</span>
+            <div class="collection-container center">
+            <div class="toggle-button resize active">
+                <span class="icon production"></span>
+                <span class="text">Production</span>
+            </div>
+            <div class="toggle-button resize ">
+                <span class="icon construction"></span>
+                <span class="text">Construction</span>
+            </div>
+            <div class="toggle-button resize ">
+                <span class="icon operation"></span>
+                <span class="text">Operation</span>
+            </div>
+            <div class="toggle-button resize active">
+                <span class="icon eol"></span>
+                <span class="text">End of Life</span>
+            </div>
+            <div class="toggle-button resize active">
+                <span class="icon reuse"></span>
+                <span class="text">Reuse</span>
+            </div>
+            </div>
+
+        
+        </div>
+        <div class="content-box">
+        <span class="content-title">Indicators</span>
+            <div class="collection-container center">
+            <div class="toggle-button">
+                <span class="text">GWP Total</span>
+            </div>
+            <div class="toggle-button active">
+                <span class="text">GWP Fossile</span>
+            </div>
+            <div class="toggle-button active">
+                <span class="text">GWP Biogenic</span>
+            </div>
+            <div class="toggle-button">
+                <span class="text">Land Use</span>
+            </div>
+            <div class="toggle-button">
+                <span class="text">Water Use</span>
+            </div>
+            <div class="toggle-button more">
+                <span class="text">More...</span>
+            </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Bulk actions to interact with selected elements, create new products, edit, ... -->
+   
+    <div>       
+            <div class="content-label">Product Actions</div>
+            <div class="collection-container no-margin">
+                <button class="chip-button resize">
+                    <span class="icon back"></span>
+                    <span class="text">Back to list</span>
+                </button>
+                <button class="chip-button resize">
+                    <span class="icon new"></span>
+                    <span class="text">New</span>
+                </button>
+                <button class="chip-button resize">
+                    <span class="icon clone"></span>
+                    <span class="text">Clone</span>
+                </button>
+                <button class="chip-button resize">
+                    <span class="icon revert"></span>
+                    <span class="text">Revert</span>
+                </button>
+                <button class="chip-button resize">
+                    <span class="icon export"></span>
+                    <span class="text">Export</span>
+                </button>
+                <button class="chip-button resize delete">
+                    <span class="icon delete"></span>
+                    <span class="text">Delete</span>
+                </button>
+                <button class="chip-button resize delete">
+                    <span class="icon sync"></span>
+                    <span class="text">Save</span>
+                </button>
+            </div>
+    </div>        
+
+    <!-- EPD Header table -->
+    <div >
+        <div class="content-label">EPD Header</div>
+        <div class="collection-container">
+            <div class="form-container inline">
+                <div class="form-group">
+                    <label for="epd_name" class="form-label">EPD Name</label>
+                    <input type="epd_name" id="epd_name" class="form-input" placeholder="epd name">
+                </div>
+                <div class="form-group">
+                    <label for="epd_standard" class="form-label">Standard</label>
+                    <input type="epd_standard" id="epd_standard" class="form-input" placeholder="standard">
+                </div>
+                <div class="form-group">
+                    <label for="epd_subtype" class="form-label">Type</label>
+                    <input type="epd_subtype" id="epd_subtype" class="form-input" placeholder="type">
+                </div>
+            </div>
+            <div class="form-container inline">
+                <div class="form-group">
+                    <label for="epd_version" class="form-label">Version</label>
+                    <input type="epd_version" id="epd_version" class="form-input" placeholder="epd version">
+                </div>
+                <div class="form-group">
+                    <label for="epd_publishedDate" class="form-label">Published Date</label>
+                    <input type="epd_publishedDate" id="epd_publishedDate" class="form-input" placeholder="published date">
+                </div>
+                <div class="form-group">
+                    <label for="epd_validUntil" class="form-label">Valid Until</label>
+                    <input type="epd_validUntil" id="epd_validUntil" class="form-input" placeholder="valid until">
+                </div>
+            </div>
+            <div class="form-container inline">
+                <div class="form-group">
+                    <label for="epd_sourceName" class="form-label">Source</label>
+                    <input type="epd_sourceName" id="epd_sourceName" class="form-input" placeholder="epd source">
+                </div>
+                <div class="form-group">
+                    <label for="epd_sourceUrl" class="form-label">URL</label>
+                    <input type="epd_sourceUrl" id="epd_sourceUrl" class="form-input" placeholder="epd url">
+                </div>
+                <div class="form-group">
+                    <label for="epd_location" class="form-label">Location</label>
+                    <input type="epd_location" id="epd_location" class="form-input" placeholder="location">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category -->
+    <div class="collection-container">
+        <div class="content-box">
+            <div>
+            <span>Category</span>
+            <select>
+                <option value="Concrete">Concrete</option>
+                <option value="Fassade">Fassade</option>
+                <option value="Insulation">Insulation</option>
+            </select>
+            </div>
+
+        <div >
+            <div class="content-label">Category Properties</div>
+            <table id="category_table" class="table">
+                <thead >
+                    <tr>
+                        <th class="sortable"><span class="icon sort"></span><span>Property 1</span></th>
+                        <th class="sortable"><span class="icon sort"></span><span>Property 2</span></th>
+                        <th class="sortable"><span class="icon sort"></span><span>Property 3</span></th>
+                        <th class="sortable"><span class="icon sort"></span><span>Property 4</span></th>
+                        <th class="sortable"><span class="icon sort"></span><span>Property 5</span></th>
+                        <th class="sortable"><span class="icon sort"></span><span>Property 6</span></th>
+                        <th class="icon"></span><span class="icon new"></span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Value 1</td>
+                        <td>Value 2</td>
+                        <td>Value 3</td>
+                        <td>Value 1</td>
+                        <td>Value 2</td>
+                        <td>Value 3</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        </div>
+    </div>
+
+    <!-- EPD physical properties table -->
+    <div >
+        <div class="content-label">EPD Physical Properties</div>
+        <div class="flex-row">
+            <div class="form-group inline">
+                <label for="epd_declaredUnit" class="form-label">Declared Unit</label>
+                <input type="epd_declaredUnit" id="epd_declaredUnit" class="form-input" placeholder="unit">
+            </div>
+            <div class="form-group inline">
+                <label for="epd_linear_density" class="form-label">Linear Density</label>
+                <input type="epd_linear_density" id="epd_linear_density" class="form-input" placeholder="linear density">
+            </div>
+            <div class="form-group inline">
+                <label for="epd_gross_density" class="form-label">Gross Density</label>
+                <input type="epd_gross_density" id="epd_gross_density" class="form-input" placeholder="gross density">
+            </div>
+            <div class="form-group inline">
+                <label for="epd_grammage" class="form-label">Grammage</label>
+                <input type="epd_grammage" id="epd_grammage" class="form-input" placeholder="grammage">
+            </div>
+            <div class="form-group inline">
+                <label for="epd_layer_thickness" class="form-label">Layer Thickness</label>
+                <input type="epd_layer_thickness" id="epd_layer_thickness" class="form-input" placeholder="layer thickness">
+            </div>
+            <div class="form-group inline">
+                <label for="epd_bulk_density" class="form-label">Bulk Density</label>
+                <input type="epd_bulk_density" id="epd_bulk_density" class="form-input" placeholder="bulk density">
+            </div>
+
+        </div>
+    </div>
+
+    <!-- EPD environmental indicators table -->
+
+    <div >
+        <table id="products_table" class="table">
+            <thead class="sticky">
+                <tr>
+                    
+                    <th class="sortable numeric"><span class="icon sort"></span><span>Indicator</span></th>
+                    <th class="sortable numeric"><span class="icon sort"></span><span>A1-3</span></th>
+                    <th class="sortable numeric"><span class="icon sort"></span><span>A4</span></th>
+                    <th class="sortable numeric"><span class="icon sort"></span><span>A5</span></th>
+                    <th class="sortable numeric"><span class="icon sort"></span><span>B1</span></th>
+                    <th class="sortable numeric"><span class="icon sort"></span><span>B2-5</span></th>
+                    <th class="sortable numeric"><span class="icon sort"></span><span>B6</span></th>
+                    <th class="sortable numeric"><span class="icon sort"></span><span>B7</span></th>
+                    <th class="sortable numeric"><span class="icon sort"></span><span>C1</span></th>
+                    <th class="sortable numeric"><span class="icon sort"></span><span>C2</span></th>
+                    <th class="sortable numeric"><span class="icon sort"></span><span>C3</span></th>
+                    <th class="sortable numeric"><span class="icon sort"></span><span>C4</span></th>
+                    <th class="sortable numeric"><span class="icon sort"></span><span>D</span></th>
+                </tr>
+            </thead> 
+            <tbody>
+                <tr>
+                    <td class="important">GWP tot</td>
+                    <td class="numeric">300</td>
+                    <td class="numeric">300</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                </tr>   
+                <tr class="highlighted">
+                    <td class="important">GWP fos</td>
+                    <td class="numeric">300</td>
+                    <td class="numeric">300</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                </tr>  
+                <tr class="highlighted">
+                    <td class="important">GWP bio</td>
+                    <td class="numeric">300</td>
+                    <td class="numeric">300</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                </tr> 
+                <tr >
+                    <td class="important">water use</td>
+                    <td class="numeric">300</td>
+                    <td class="numeric">300</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                </tr> 
+                <tr >
+                    <td class="important">land use</td>
+                    <td class="numeric">300</td>
+                    <td class="numeric">300</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                    <td class="numeric">0</td>
+                </tr> 
+                <tr >
+                    <td class="numeric"><span></span></td>
+                    <td class="numeric"><span class="icon large production"></span></td>
+                    <td class="numeric"><span class="icon large transport"></span></td>
+                    <td class="numeric"><span class="icon large construction"></span></td>
+                    <td class="numeric"><span class="icon large emissions"></span></td>
+                    <td class="numeric"><span class="icon large maintenance"></span></td>
+                    <td class="numeric"><span class="icon large operation"></span></td>
+                    <td class="numeric"><span class="icon large water"></span></td>
+                    <td class="numeric"><span class="icon large eos"></span></td>
+                    <td class="numeric"><span class="icon large waste-transport"></span></td>
+                    <td class="numeric"><span class="icon large process"></span></td>
+                    <td class="numeric"><span class="icon large dispose"></span></td>
+                    <td class="numeric"><span class="icon large reuse"></span></td>
+                </tr> 
+                <tr>
+                    <td><span></span></td>
+                    <td class="label numeric">Production</td>
+                    <td class="label numeric">Transport</td>
+                    <td class="label numeric">Construction</td>
+                    <td class="label numeric">Use emissions</td>
+                    <td class="label numeric">Maintenance</td>
+                    <td class="label numeric">Energy use</td>
+                    <td class="label numeric">Water use</td>
+                    <td class="label numeric">Demo</td>
+                    <td class="label numeric">Waste Transport</td>
+                    <td class="label numeric">Waste Process</td>
+                    <td class="label numeric">Disposal</td>
+                    <td class="label numeric">Reuse</td>
+                </tr>
+            </tbody>
+    </div>
+
+</div>
+
+  
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Categories</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body class="container">
+  <div class="main-content">
+    <h1 class="title">Categories</h1>
+    
+    <!-- Products Categories Section -->
+    <div class="section-container" id="productsSection">
+      <div class="section-header" onclick="toggleSection('productsSection')">
+        <a>Products</a>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="section-content">
+        <!-- Add Category Card -->
+        <div class="card add-card">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <p>Add Category</p>
+        </div>
+        
+        <!-- Sample Category Cards -->
+        <div class="card">
+          <div class="card-name">Concrete</div>
+          <div class="card-description">High-performance concrete for structural applications. Provides exceptional durability and strength for various construction projects.</div>
+          <div class="card-list">
+            <div class="list-title">Properties:</div>
+            <ul class="list-items">
+              <li>Chemical Resistance</li>
+              <li>Compressive Strength</li>
+              <li>Water Resistance</li>
+            </ul>
+          </div>
+          <div class="card-list">
+            <div class="list-title">Entities:</div>
+            <ul class="list-items">
+              <li>Structural Concrete Mix</li>
+              <li>Fast-Setting Concrete</li>
+              <li>...</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-name">Steel</div>
+          <div class="card-description">Structural steel components for construction. High tensile strength and durability make it suitable for load-bearing applications.</div>
+          <div class="card-list">
+            <div class="list-title">Properties:</div>
+            <ul class="list-items">
+              <li>Tensile Strength</li>
+              <li>Corrosion Resistance</li>
+              <li>Ductility</li>
+            </ul>
+          </div>
+          <div class="card-list">
+            <div class="list-title">Entities:</div>
+            <ul class="list-items">
+              <li>I-Beams</li>
+              <li>Steel Rebar</li>
+              <li>Structural Columns</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Buildups Categories Section -->
+    <div class="section-container" id="buildupsSection">
+      <div class="section-header" onclick="toggleSection('buildupsSection')">
+        <a>Buildups</a>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="section-content">
+        <!-- Add Category Card -->
+        <div class="card add-card">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <p>Add Category</p>
+        </div>
+        
+        <!-- Sample Category Cards -->
+        <div class="card">
+          <div class="card-name">Wall Systems</div>
+          <div class="card-description">Complete wall assembly systems including insulation, vapor barriers, and finishing components for commercial and residential applications.</div>
+          <div class="card-list">
+            <div class="list-title">Properties:</div>
+            <ul class="list-items">
+              <li>R-Value</li>
+              <li>Fire Rating</li>
+              <li>Sound Transmission Class</li>
+            </ul>
+          </div>
+          <div class="card-list">
+            <div class="list-title">Entities:</div>
+            <ul class="list-items">
+              <li>Exterior Insulated Wall</li>
+              <li>Acoustic Partition</li>
+              <li>...</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-name">Roof Assemblies</div>
+          <div class="card-description">Comprehensive roof systems designed for weather protection, energy efficiency, and longevity in various climate conditions.</div>
+          <div class="card-list">
+            <div class="list-title">Properties:</div>
+            <ul class="list-items">
+              <li>Water Resistance</li>
+              <li>Wind Uplift Resistance</li>
+              <li>Thermal Performance</li>
+            </ul>
+          </div>
+          <div class="card-list">
+            <div class="list-title">Entities:</div>
+            <ul class="list-items">
+              <li>Flat Roof System</li>
+              <li>Sloped Metal Roof</li>
+              <li>Green Roof Assembly</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-name">Floor Systems</div>
+          <div class="card-description">Integrated floor assemblies including structural components, insulation, and finished flooring designed for commercial and residential applications.</div>
+          <div class="card-list">
+            <div class="list-title">Properties:</div>
+            <ul class="list-items">
+              <li>Load Capacity</li>
+              <li>Acoustic Rating</li>
+              <li>Thermal Mass</li>
+            </ul>
+          </div>
+          <div class="card-list">
+            <div class="list-title">Entities:</div>
+            <ul class="list-items">
+              <li>Raised Access Floor</li>
+              <li>Radiant Heating Floor</li>
+              <li>...</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    function toggleSection(sectionId) {
+      const section = document.getElementById(sectionId);
+      section.classList.toggle('collapsed');
+    }
+  </script>
+</body>
+</html>
