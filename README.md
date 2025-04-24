@@ -8,14 +8,14 @@ Currently in WIP
 
 |      Area      |                |                |                |
 |----------------|----------------|----------------|----------------|
-| Backend        | infrastructure ✅ | interfaces ✅  | services ✅     |
-| Frontend       | stores ✅         | interfaces ✅  | presentation ✅ |
-| Core services  | db ✅           | login registr. ✅ | permissions ✅ |
-|                | user roles ✅     | project roles  | file server     |
-| App modules    | products 🚧       | buildups 🚧    | models          |
-|                | categories 🚧     | projects       | share views     |
-| Revit plugin   | hybrid setup ✅   | web request ✅  | login ✅        |
-|                | filters 🚧        | buildups       | models          |
+| Backend        | ✅ infrastructure  |✅ interfaces  |✅ services     |
+| Frontend       | ✅ stores         |✅ interfaces  |✅ presentation |
+| Core services  | ✅ db           |✅ login registr. |✅ permissions |
+|                | ✅ user roles     |[ ] project roles  |[ ] file server     |
+| App modules    | 🚧 products        | 🚧 buildups    |[ ] models          |
+|                | 🚧 categories      |[ ] projects       |[ ] share views     |
+| Revit plugin   | ✅ hybrid setup    |✅ web request   |✅ login       |
+|                | 🚧 filters         |[ ] buildups       |[ ] models          |
 
 ✅ completed
 🚧 work in progress
