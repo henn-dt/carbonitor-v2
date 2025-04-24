@@ -6,6 +6,8 @@ For quick start and advanced setup check the [Docs](https://henn-ds.notion.site/
 
 Currently in WIP
 
+|      Area      |                |                |                |
+|----------------|----------------|----------------|----------------|
 | Backend        | infrastructure ✅ | interfaces ✅  | services ✅     |
 | Frontend       | stores ✅         | interfaces ✅  | presentation ✅ |
 | Core services  | db ✅           | login registr. ✅ | permissions ✅ |
