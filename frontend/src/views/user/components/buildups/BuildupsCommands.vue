@@ -59,9 +59,10 @@ export default defineComponent({
 
     // Open modal handler - simplified and fixed double-click issue
     const openEditModal = () => {
+      isNewBuildup.value = false
       const rowId = props.rowIndex;
 
-      uiModalStore.openModal({
+      uiModalStore.openModal({        
         name: 'buildup-detail',
         params: {
           buildupId: rowId,

@@ -66,7 +66,7 @@ export class ProductMappingService implements IProductMappingService{
       return { valid: true };
     }
 
-    async mapToEPD(product: ReferenceSourceForProduct, quantity : number): Promise<IMappedEntity<IProduct>> {
+    async mapToEPD(product: ReferenceSourceForProduct, quantity : number, mappingId : string): Promise<IMappedEntity<IProduct>> {
 
       //this needs to change, i actually need the products. I need a "epd to product" method somewhere reachable
       // Logic to convert reference to product
@@ -81,6 +81,7 @@ export class ProductMappingService implements IProductMappingService{
           throw new Error('could not parse epd from buildup actual product');
         }
         return {
+            elementMapId: mappingId,
             entity: await this.productSnapshotService.convertEpdToProduct(epd),
             quantity
         }
@@ -97,6 +98,7 @@ export class ProductMappingService implements IProductMappingService{
           throw new Error('Failed to parse EPD data');
         }
         return {
+          elementMapId: mappingId,
           entity: productResponse,
           quantity
       };
@@ -158,7 +160,7 @@ export class ProductMappingService implements IProductMappingService{
         const result = results[productId];
         const quantity = result.quantity
 
-        const mappedProducts = await this.mapToEPD(product, quantity);
+        const mappedProducts = await this.mapToEPD(product, quantity, productId);
 
         if (!mappedEntities[elementId]) {
           mappedEntities[elementId] = [];

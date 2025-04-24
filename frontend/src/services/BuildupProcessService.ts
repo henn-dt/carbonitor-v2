@@ -13,13 +13,21 @@ export class BuildupProcessService implements IBuildupProcessService {
     constructor(
         @inject(TYPES.ImpactCalculationService) private impactService: IImpactCalculationService
     ) {}
+
+    async processIfNeeded() {
+        const buildupStore = getBuildupStore();
+        if (buildupStore.needsProcessing) {
+            this.processAllBuildups()
+            buildupStore.setNeedsProcessing(false)
+        }
+    }
     /**
      * Process a single buildup with incremental update check
      */
     async processBuildup(buildupId: number): Promise<IBuildupWithProcessedProducts> {
         try {
             const buildupStore = getBuildupStore();
-            buildupStore.setProcessingStatus(buildupId, true);
+
             
             // Find the buildup in the store
             const buildup = buildupStore.buildups.find(b => b.id === buildupId);
@@ -45,11 +53,12 @@ export class BuildupProcessService implements IBuildupProcessService {
                 // If the processed data is newer than the buildup, no update needed
                 if (processedLastUpdate >= buildupLastUpdate) {
                     console.log(`Processed data for buildup ${buildupId} is up-to-date`);
-                    buildupStore.setProcessingStatus(buildupId, false);
+
                     return this.getCombinedBuildup(buildupId);
                 }
                 
                 console.log(`Processed data for buildup ${buildupId} needs updating`);
+                buildupStore.setProcessingStatus(buildupId, true);
             }
             
             // Process the buildup
@@ -64,6 +73,7 @@ export class BuildupProcessService implements IBuildupProcessService {
             // Store the processed data with timestamp
             buildupStore.setProcessedBuildup(buildupId, processedWithTimestamp);
             buildupStore.setProcessingStatus(buildupId, false);
+            
             
             // Return the combined view
             return this.getCombinedBuildup(buildupId);
@@ -129,13 +139,12 @@ export class BuildupProcessService implements IBuildupProcessService {
     async processAllBuildups(): Promise<IBuildupWithProcessedProducts[]> {
         try {
             const buildupStore = getBuildupStore();
-            buildupStore.setProcessingAllStatus(true);
             
             // Get all buildups
             const buildups = [...buildupStore.buildups];
             
             // If needsRefresh is set, process all buildups
-            if (buildupStore.needsRefresh) {
+            if (buildupStore.needsProcessing) {
                 console.log("Full refresh of processed buildups requested");
                 await this.processAllBuildupsFull(buildups);
                 return this.getAllCombinedBuildups();
@@ -152,6 +161,7 @@ export class BuildupProcessService implements IBuildupProcessService {
         } finally {
             const buildupStore = getBuildupStore();
             buildupStore.setProcessingAllStatus(false);
+            buildupStore.setNeedsProcessing(false)
         }
     }
 

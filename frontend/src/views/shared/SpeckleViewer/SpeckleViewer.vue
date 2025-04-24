@@ -1,9 +1,18 @@
+<!-- frontend/src/views/shared/SpeckleViewer/SpeckleViewer.vue -->
 <template>
-    <div class="speckle-viewer-container" ref="viewerContainer"></div>
+  <div class="speckle-viewer-container" ref="viewerContainer" style="position:relative;">
+    <!-- The `:key` triggers a remount when isViewerReady becomes true -->
+    <slot
+      v-if="!loading && !loadError && readyViewer"
+      name="controls"
+      :viewer="readyViewer"
+      :key="readyViewer"
+    ></slot>
+  </div>
   </template>
   
   <script lang="ts">
-  import { defineComponent, ref, onMounted, onBeforeUnmount, type PropType } from 'vue';
+  import { defineComponent, ref, onMounted, onBeforeUnmount, type PropType, computed , markRaw, type Raw, watch} from 'vue';
   import {
     Viewer,
     DefaultViewerParams,
@@ -11,7 +20,8 @@
     UrlHelper,
     ViewerEvent
   } from '@speckle/viewer';
-  import { CameraController, SelectionExtension } from '@speckle/viewer';
+  import { CameraController, SelectionExtension , FilteringExtension} from '@speckle/viewer';
+  import { getCollectionNodeIdsByNames } from './Selection/getCollections';
   
   export interface SpeckleModelData {
     modelUrl: string;
@@ -25,15 +35,21 @@
       modelData: {
         type: Object as PropType<SpeckleModelData>,
         required: true
+      },
+      selectedCollections: {
+        type: Array as PropType<String[]>,
+        default: () => []
       }
     },
-    setup(props) {
+    setup(props, {expose} ) {
         const viewerContainer = ref<HTMLElement | null>(null);
         const loadError = ref<string | null>(null);
         const loading = ref(true);
-        let viewer: any = null;
-
-
+        
+        const isViewerReady = ref<Boolean>(false)
+        const viewer = ref<any>(null)
+        const readyViewer = computed(() => (isViewerReady.value ? viewer.value : null))
+        const renderKey = ref(0);
 
     const getSpeckleToken = async () => {
       // First priority: Token provided directly in props
@@ -64,13 +80,19 @@
         params.verbose = true;
         
         // 3. Create and initialize viewer
-        viewer = new Viewer(viewerContainer.value, params);
-        await viewer.init();
+        viewer.value = markRaw(new Viewer(viewerContainer.value, params));        
+        await viewer.value.init();
+        console.log('ASSIGNING VIEWER', viewer.value)
+        isViewerReady.value = true
+        renderKey.value = Date.now(); // or increment
+
+        console.log('viewer initialised')
         
         // 4. Add extensions
-        const { CameraController, SelectionExtension } = speckleModule;
-        viewer.createExtension(CameraController);
-        viewer.createExtension(SelectionExtension);
+        const { CameraController, SelectionExtension , FilteringExtension} = speckleModule;
+        viewer.value.createExtension(CameraController);
+        viewer.value.createExtension(SelectionExtension);
+        viewer.value.createExtension(FilteringExtension)
         
         // 5. Get authentication token
         const token = await getSpeckleToken();
@@ -83,8 +105,10 @@
         
         if (!resourceUrls || resourceUrls.length === 0) {
           throw new Error('Could not resolve any resource URLs for the provided model URL');
+          
         }
-        
+
+
         console.log(`Resolved ${resourceUrls.length} resource URLs`);
         
         // 6. Load each resource URL
@@ -93,14 +117,14 @@
           
           // Create the SpeckleLoader with the correct parameters
           const loader = new SpeckleLoader(
-            viewer.getWorldTree(),
+            viewer.value.getWorldTree(),
             resourceUrl,
             token || '', // Auth token (optional)
             true  // Enable caching
           );
           
           // Load the object
-          await viewer.loadObject(loader, true);
+          await viewer.value.loadObject(loader, true);
         }
         
         console.log('Speckle model loaded successfully');
@@ -111,22 +135,53 @@
         loading.value = false;
       }
     };
+
+    watch(
+        () => props.selectedCollections,
+        (newVal) => {
+          if (!viewer.value) return;
+          if (newVal && newVal.length > 0) {
+            const collectionIds = getCollectionNodeIdsByNames(viewer.value, newVal);
+            if (!collectionIds.length) {
+              // Optionally clear selection if no matches
+              const selection = viewer.value.getExtension(SelectionExtension)
+              if (selection) selection.clearSelection();
+              return;
+            }
+            // Select them
+            const selection = viewer.value.getExtension(SelectionExtension)
+            if (selection) {
+              // clear previous if needed
+              selection.clearSelection();
+              selection.selectObjects(collectionIds);
+            }
+          } else {
+            // Deselect all if passed-in array is empty
+            const selection = viewer.value.getExtension(SelectionExtension)
+            if (selection) selection.clearSelection();
+          }
+        }
+)
   
       onMounted(() => {
         initViewer();
       });
   
       onBeforeUnmount(() => {
-        if (viewer) {
-          viewer.dispose();
-          viewer = null;
+        if (viewer.value) {
+          viewer.value.dispose();
+          viewer.value = null;
         }
       });
-  
+
+      expose({ readyViewer })
+
       return {
-    viewerContainer,
+      viewerContainer,
       loadError,
-      loading
+      loading,
+      viewer,
+      readyViewer,
       };
     }
   });
@@ -135,7 +190,9 @@
   <style scoped>
   .speckle-viewer-container {
     width: 100%;
-    height: 100%;
-    min-height: 400px;
+    max-height: 100%;
+    min-height: 320px;
+    min-width: 200px;
+    flex: 1
   }
   </style>

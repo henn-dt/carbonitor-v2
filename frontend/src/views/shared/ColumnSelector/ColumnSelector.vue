@@ -58,7 +58,11 @@ export default defineComponent({
 		selected: {
 			type: Array as PropType<ColumnDefinition[]>,
 			required: true
-		}
+		},
+        singleSelection: {
+            type: Boolean,
+            default: false             // <------ Add this for optional single-select
+        }
 	},
 	emits: ['update', 'update:modelValue'],
 	setup(props, { emit }) {
@@ -84,17 +88,21 @@ export default defineComponent({
 		const isSelected = (item: ColumnDefinition): boolean => { return localSelected.value.some(selectedItem => selectedItem.key === item.key); };
 		
 		// Toggle item selection
-		const toggleItem = (item: ColumnDefinition) => {
-			const index = localSelected.value.findIndex(selectedItem => selectedItem.key === item.key);
-			if (index === -1) {
-				// Item not selected, add it
-				localSelected.value.push(item);
-			} else {
-				// Item already selected, remove it
-				localSelected.value.splice(index, 1);
-			}
-			emit('update', localSelected.value);
-		};
+        // --- changed implementation here if singleSelection is on! ---
+        const toggleItem = (item: ColumnDefinition) => {
+            if (props.singleSelection) {
+                // select only one item at a time
+                localSelected.value = [item];
+            } else {
+                const index = localSelected.value.findIndex(selectedItem => selectedItem.key === item.key);
+                if (index === -1) {
+                    localSelected.value.push(item);
+                } else {
+                    localSelected.value.splice(index, 1);
+                }
+            }
+            emit('update', localSelected.value);
+        };
 		
 		// Reset to default items
 		const resetSelection = () => {

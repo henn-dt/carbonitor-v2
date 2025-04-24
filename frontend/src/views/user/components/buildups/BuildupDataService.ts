@@ -5,6 +5,7 @@ import { ProductDataService } from '@/views/user/components/products/ProductData
 import type { IBuildupWithProcessedProducts } from '@/types/epdx/IBuildupWithProcessedProducts';
 import type { IBuildup } from '@/types/buildup/IBuildup';
 import { SharedDataService } from '@/views/shared/DataTable/DataService';
+import { ColumnType } from '@/views/shared/ColumnSelector/ColumnType';
 
 /**
  * Service responsible for transforming buildup data for the BuildupsView
@@ -56,64 +57,109 @@ export class BuildupDataService {
    * Prepares a table showing products within a specific buildup
    */
   static prepareProductsInBuildupTable(
-    buildup: (IBuildup & IBuildupWithProcessedProducts),
-    selectedProductColumns: ColumnDefinition[],
+    buildup: IBuildup & IBuildupWithProcessedProducts,
     selectedIndicators: ColumnDefinition[],
     selectedLifeCycles: ColumnDefinition[]
   ): ColumnDefinition[] {
-    // Reset columnValues arrays for all columns
-    SharedDataService.resetColumnValues(selectedProductColumns);
-    
-    // Create dynamic columns with pre-initialized columnValues arrays
+  // Canonical base columns
+  const baseColumns: ColumnDefinition[] = [
+    {
+      key: 'mappingElement',
+      label: 'Mapping Element',
+      columnProperties: {type: ColumnType.string, minWidth: 10, maxWidth: 10, defaultValue: "mapping_id"},
+      visible: true,
+      columnValues: [],
+      default: true
+    },
+    {
+      key: 'productName',
+      label: 'Product Name',
+      columnProperties: {type: ColumnType.string, minWidth: 10, maxWidth: 10, defaultValue: ""},
+      visible: true,
+      columnValues: [],
+      default: true
+    },
+    {
+      key: 'productMapId',
+      label: 'ID of product in buildup',
+      columnProperties: {type: ColumnType.string, minWidth: 10, maxWidth: 10, defaultValue: "product_id"},
+      visible: true,
+      columnValues: [],
+      default: true
+    },
+    {
+      key: 'productId',
+      label: 'Product ID',
+      columnProperties: {type: ColumnType.numeric, minWidth: 10, maxWidth: 10, defaultValue: -1},
+      visible: false,
+      columnValues: [],
+      default: false
+    },
+    {
+      key: 'declaredUnit',
+      label: 'Declared Unit',
+      columnProperties: {type: ColumnType.string, minWidth: 10, maxWidth: 10, defaultValue: "unknown"},
+      visible: false,
+      columnValues: [],
+      default: false
+    },
+    {
+      key: 'normalizedQuantity',
+      label: 'Normalized Quantity',
+      columnProperties: {type: ColumnType.numeric, minWidth: 10, maxWidth: 10, defaultValue: 1},
+      visible: true,
+      columnValues: [],
+      default: false
+    },
+    {
+      key: 'quantity',
+      label: 'Full Quantity',
+      columnProperties: {type: ColumnType.numeric, minWidth: 10, maxWidth: 10, defaultValue: 1},
+      visible: false,
+      columnValues: [],
+      default: false
+    }
+  ];
+
+    // 2. Generate Indicator x Phase columns using helper
     const dynamicColumns = SharedDataService.createDynamicColumns(
-      selectedIndicators, 
+      selectedIndicators,
       selectedLifeCycles
     );
-    
-    // Add a normalized quantity column if not already present
-    if (!selectedProductColumns.some(col => col.key === 'normalizedQuantity')) {
-      const normalizedQuantityColumn = {
-        key: 'normalizedQuantity',
-        label: 'Normalized Quantity',
-        tooltip: 'Product quantity normalized by buildup quantity',
-        type: 'number',
-        visible: true,
-        columnValues: [],
-        default: false
-      };
-      selectedProductColumns.push(normalizedQuantityColumn as ColumnDefinition);
-    }
-    
-    // Process all products in the buildup
-    buildup.processedProducts.forEach((product, index) => {
-      // Calculate normalized quantity
-      const normalizedQuantity = product.quantity / buildup.quantity;
-      
-      // Handle product columns
-      selectedProductColumns.forEach(column => {
-        let value = product[column.key as keyof typeof product];
-        
-        // Special handling for normalizedQuantity
-        if (column.key === 'normalizedQuantity') {
-          value = normalizedQuantity;
-        }
-        
-        column.columnValues?.push({rowId: index, value: value});
-      });
-      
-      // Process indicators for each product, normalized by the buildup quantity
-      this.processProductIndicatorsInBuildup(
-        product,
-        buildup.quantity,
-        index,
-        selectedIndicators,
-        selectedLifeCycles,
-        dynamicColumns
-      );
-    });
-    
-    return [...selectedProductColumns, ...dynamicColumns];
+    SharedDataService.resetColumnValues(dynamicColumns);
+
+    // Iterate through mappings and products
+    let rowIdx = 0;
+    for (const [mappingName, products] of Object.entries(buildup.mappedProducts)) {
+      for (const product of products) {
+        const normalizedQuantity = buildup.quantity ? (product.quantity / buildup.quantity) : 0;
+
+    // Base columns
+    baseColumns.find(c => c.key === 'mappingElement')!.columnValues!.push({ rowId: rowIdx, value: mappingName });
+    baseColumns.find(c => c.key === 'productName')!.columnValues!.push({ rowId: rowIdx, value: product.epd_name });
+    baseColumns.find(c => c.key === 'declaredUnit')!.columnValues!.push({ rowId: rowIdx, value: product.epd_declaredUnit });
+    baseColumns.find(c => c.key === 'productMapId')!.columnValues!.push({ rowId: rowIdx, value: product.elementMapId });
+    baseColumns.find(c => c.key === 'productId')!.columnValues!.push({ rowId: rowIdx, value: product.id });
+    baseColumns.find(c => c.key === 'normalizedQuantity')!.columnValues!.push({ rowId: rowIdx, value: normalizedQuantity });
+    baseColumns.find(c => c.key === 'quantity')!.columnValues!.push({ rowId: rowIdx, value: product.quantity });
+
+    // Indicators/phases: use your preferred helper
+    this.processProductIndicatorsInBuildup(
+      product,
+      buildup.quantity,
+      rowIdx,
+      selectedIndicators,
+      selectedLifeCycles,
+      dynamicColumns
+    );
+    rowIdx++;
   }
+}
+
+  return [...baseColumns, ...dynamicColumns];
+  }
+    
+
   
   /**
    * Process indicators for a buildup by aggregating all product impacts

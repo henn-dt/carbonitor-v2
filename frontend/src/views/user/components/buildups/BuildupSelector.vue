@@ -26,25 +26,28 @@
                 :checked="isCodeGroupSelected(codeKey)"
                 @click.stop="toggleCodeGroup(codeKey, codeGroup)"
                 >
-            <div class="group-title" @click="toggleBuildups(`${codeKey.toLowerCase()}Buildups`)">
+            <div class="group-title" @click="toggleBuildups(`${codeKey.toLowerCase()}Buildups`, codeKey)">
                 <div class = "label">
                     <span class="code">{{ codeKey.split('|')[0] }}</span>
                     <span> | </span>
                     <span class="name">{{ codeKey.split('|')[1] }}</span>
                 </div>
-                    <span class="icon chevron collapse-down"></span>
+                <span class="icon chevron" :class="expandedCodeGroups.has(codeKey) ? 'collapse-down' : 'collapse-up'"></span>
             </div>
             
           </div>
           
           <!-- List individual buildups within each code group -->
-          <div class="filter-items-container">
+          <div class="filter-items-container"
+          :style="{display: expandedCodeGroups.has(codeKey) ? 'block' : 'none'}"
+          >
             <div 
               v-for="buildup in codeGroup" 
               :key="buildup.id" 
               class="buildup-item"             
             >   <div class="filter-item" @click="selectBuildup(buildup)">
                     <input type="checkbox"
+                        
                         :checked="isBuildupSelected(buildup)"
                         @click.stop="selectBuildup(buildup)"
                         >
@@ -93,6 +96,7 @@ export default defineComponent({
   setup(props, {emit }) {
 
     const selectedBuildup = ref<IBuildup | null>(null);
+    const expandedCodeGroups = ref<Set<string>>(new Set());
     
 
     // State for tracking selected buildups
@@ -344,23 +348,13 @@ export default defineComponent({
     };
 
     // Toggle buildups visibility
-    const toggleBuildups = (sectionId: string) => {
-      const section = document.getElementById(sectionId);
-      if (section) {
-        const content = section.querySelector('.filter-items-container') as HTMLElement;
-        const chevron = section.querySelector('.chevron') as HTMLElement;
-        
-        if (content.style.display === 'none') {
-          content.style.display = 'block';
-          chevron.classList.remove('collapse-up');
-          chevron.classList.add('collapse-down')
-        } else {
-          content.style.display = 'none';
-          chevron.classList.remove('collapse-down');
-          chevron.classList.add('collapse-up')
-        }
-      }
-    };
+    const toggleBuildups = (sectionId: string, codeKey: string) => {
+  if (expandedCodeGroups.value.has(codeKey)) {
+    expandedCodeGroups.value.delete(codeKey);
+  } else {
+    expandedCodeGroups.value.add(codeKey);
+  }
+};
 
     // Method to handle buildup selection
 
@@ -441,6 +435,7 @@ export default defineComponent({
     
     return {
       groupedDisplayBuildups,
+      expandedCodeGroups,
       toggleSection,
       toggleBuildups,
       selectBuildup,

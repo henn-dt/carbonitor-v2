@@ -32,7 +32,7 @@ export default defineComponent({
       { key: 'bar', label: 'Bar', icon: '📊' },
       { key: 'scatter', label: 'Scatter', icon: '📈' },
       { key: 'pie', label: 'Pie', icon: '🥧' },
-      { key: 'lifeCycleComparison', label: 'Lifecycle Comparison', icon: '🔄' }
+      { key: 'lifeCycleComparison', label: 'GWP Comparison', icon: '🔄' }
     ];
     
     return {

@@ -17,6 +17,7 @@
   "dependencies": {
     "@speckle/viewer": "^2.23.16",
     "axios": "^1.7.9",
+    "chroma-js": "^3.1.2",
     "d3": "^7.9.0",
     "d3-array": "^3.2.4",
     "d3-axis": "^3.0.0",

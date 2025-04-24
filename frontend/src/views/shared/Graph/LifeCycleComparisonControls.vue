@@ -18,24 +18,6 @@
             </option>
           </select>
         </div>
-        
-        <!-- Y-Axis (only Total columns) -->
-        <div class="control-group">
-          <label for="yAxis">Impact Indicator:</label>
-          <select 
-            id="yAxis"
-            :value="yAxisColumn"
-            @change="handleYAxisChange"
-          >
-            <option 
-              v-for="col in totalColumns" 
-              :key="col.key" 
-              :value="col.key"
-            >
-              {{ col.label }}
-            </option>
-          </select>
-        </div>
       </div>
       
       <div class="control-row">

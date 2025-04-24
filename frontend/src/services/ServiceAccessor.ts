@@ -6,7 +6,8 @@ import { createRefreshableService } from '@/composables/createRefreshableService
 import type { ICategoryService } from '@/services/ICategoryService';
 import type { IProductService } from '@/services/IProductService';
 import type { IBuildupService } from '@/services/IBuildupService';
-import type { IBuildupProcessService } from './IBuildupProcessService';
+import type { IBuildupProcessService } from '@/services/IBuildupProcessService';
+import type { IImpactCalculationService } from '@/services/IImpactCalculationService';
 
 // Type for the enhanced service
 type RefreshableService<T> = T & {
@@ -19,6 +20,7 @@ let _categoryService: RefreshableService<ICategoryService> | null = null;
 let _productService: RefreshableService<IProductService> | null = null;
 let _buildupService: RefreshableService<IBuildupService> | null = null;
 let _buildupProcessService: RefreshableService<IBuildupProcessService> | null = null;
+let _impactCalculationService : IImpactCalculationService | null = null
 
 // Get the enhanced Category Service
 export function getCategoryService(): RefreshableService<ICategoryService> {
@@ -83,6 +85,19 @@ export function getBuildupProcessService(): RefreshableService<IBuildupProcessSe
         );
     }
     return _buildupProcessService;
+}
+
+export function getImpactCalculationService(): IImpactCalculationService {
+    if (!_impactCalculationService) {
+        
+        // Get the raw service instance from the container
+        const rawService = container.get<IImpactCalculationService>(TYPES.ImpactCalculationService);
+
+        _impactCalculationService = rawService
+        
+
+    }
+    return _impactCalculationService;
 }
 
 

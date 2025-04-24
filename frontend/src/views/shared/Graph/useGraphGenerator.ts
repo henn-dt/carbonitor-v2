@@ -5,6 +5,23 @@ import { useBarChartGenerator } from '@/views/shared/Graph/useBarChartGenerator'
 import { useScatterPlotGenerator } from '@/views/shared/Graph/useScatterPlotGenerator';
 import { usePieChartGenerator } from '@/views/shared/Graph/usePieChartGenerator';
 import { useLifeCycleComparisonChart } from '@/views/shared/Graph/useLifeCycleComparisonChart';
+import { useTreemapGraphGenerator } from './useTreemapGraph';
+
+  // Load Plotly.js from CDN
+  export const loadPlotlyCDN = () => {
+    return new Promise<void>((resolve, reject) => {
+      if ((window as any).Plotly) {
+        resolve();
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://cdn.plot.ly/plotly-2.20.0.min.js';
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error('Failed to load Plotly from CDN'));
+      document.head.appendChild(script);
+    });
+  };
+
 
 export function useGraphGenerator(
   props: {
@@ -30,6 +47,7 @@ export function useGraphGenerator(
   const { generateBarChart, generateLifecycleBarChart } = useBarChartGenerator(props, graphContainer, config);
   const { generateScatterPlot } = useScatterPlotGenerator(props, graphContainer, config);
   const { generatePieChart } = usePieChartGenerator(props, graphContainer, config);
+  const { generateTreemapGraph} = useTreemapGraphGenerator(props, graphContainer, config)
   
   // Import the new lifecycle comparison chart generator
   const { generateLifeCycleComparisonChart } = useLifeCycleComparisonChart(
@@ -42,20 +60,7 @@ export function useGraphGenerator(
     }
   );
   
-  // Load Plotly.js from CDN
-  const loadPlotlyCDN = () => {
-    return new Promise<void>((resolve, reject) => {
-      if ((window as any).Plotly) {
-        resolve();
-        return;
-      }
-      const script = document.createElement('script');
-      script.src = 'https://cdn.plot.ly/plotly-2.20.0.min.js';
-      script.onload = () => resolve();
-      script.onerror = () => reject(new Error('Failed to load Plotly from CDN'));
-      document.head.appendChild(script);
-    });
-  };
+
   
   // Generate the appropriate plot based on configuration
   const generatePlot = () => {
@@ -93,7 +98,7 @@ export function useGraphGenerator(
     
     if (filteredRows.length === 0) {
       // Display a message when no data
-      if (graphContainer.value) {
+      if (graphType.value !== 'lifeCycleComparison' && graphContainer.value) {
         graphContainer.value.innerHTML = '<div class="no-data">No data available for the current selection</div>';
       }
       return;
@@ -116,6 +121,9 @@ export function useGraphGenerator(
       case 'lifeCycleComparison':
         generateLifeCycleComparisonChart();
         break;
+      case 'treemap':
+        generateTreemapGraph(filteredRows);
+        break
     }
   };
 

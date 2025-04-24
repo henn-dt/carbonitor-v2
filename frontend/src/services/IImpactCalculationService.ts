@@ -42,8 +42,13 @@ export interface IImpactCalculationService {
      * @param products Array of products to process
      * @returns Array of products with EPD objects and calculated impacts
      */
-    processProducts<T extends { epdx: string | object }>(products: T[]): (T & IProductWithCalculatedImpacts)[];
 
+    processProducts<T extends { epdx: string | object }>(
+        toProcess: [T, number?, string?, string?][]
+      ): (T & IProductWithCalculatedImpacts)[];
+    processProducts<T extends { epdx: string | object }>(
+        products: T[]
+      ): (T & IProductWithCalculatedImpacts)[];
 
     processSingleBuildupImpacts(buildup: IBuildup): Promise<IBuildupWithProcessedProducts> 
    

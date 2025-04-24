@@ -7,4 +7,6 @@ export interface IProductWithCalculatedImpacts {
     epdObject: EPD | null;
     calculatedImpacts: Record<ImpactCategoryKey, ICalculatedImpact>;
     quantity: number;
+    elementMapId?: string;
+    mappingId?: string
 }

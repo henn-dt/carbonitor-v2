@@ -35,18 +35,17 @@ class CustomDateTime(fields.Raw):
 # API Models
 buildup_input_model = buildup_ns.model('buildupInput', {
     'status': fields.String(required=True, description='buildup status'),
-    'user_created': fields.String(description='User who created the buildup'),
-    'user_updated': fields.String(description='User who last updated the buildup'),
+    'user_id_created': fields.Integer(description='Id of User who created the buildup'),
+    'user_id_updated': fields.Integer(description='Id of User who last updated the buildup'),
     'name': fields.String(required=True, description='Buildup name'),
     'description': fields.String(required=False, description='Buildup description'),
     'unit': fields.String(required=False, description='Buildup reference unit'),
     'comment': fields.String(required=False, description='Buildup comment'),
-    'classification': fields.Raw(required=False, description='Buildup classification dictionary'),
+    'classification': fields.List(fields.Raw, required=False, description='Buildup classification dictionary'),
     'quantity': fields.Float(required=False, description='Buildup reference quantity'),
     'meta_data': fields.Raw(required=False, description='Buildup additional information'),
     'products': fields.Raw(required=False, description='Buildup products dictionary'),
     'results': fields.Raw(required=False, description='Buildup products dictionary'),
-
 })
 
 buildup_output_model = buildup_ns.inherit('buildup', buildup_input_model, {

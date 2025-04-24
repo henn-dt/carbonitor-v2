@@ -11,7 +11,7 @@
         <span v-if="!isCollapsed" class="icon close"></span>
       </div>
       
-      <div class="filters-content" >
+      <div v-if="!isCollapsed" class="filters-content" >
         <!-- Default slot for page-specific selectors -->
         <slot></slot>
       </div>

@@ -1,54 +1,66 @@
 <!-- MappingElement.vue -->
 <template>
-  <div class="form-section mapping-element">
-    <div class="section-header">
-      <div class="content-title">
-        <!-- Editable mapping name -->
-        <input 
-          type="text" 
-          v-model="localMappingName" 
-          @blur="updateMappingName"
-          class="mapping-name-input"
-          :disabled="disabled"
-        />
+  <div class="property-item mapping-item" @click="emitSelection">
+    <div class="flex-row">
+      <input 
+        type="text" 
+        v-model="mappingName" 
+        class="mapping-name-input"
+        :disabled="disabled"
+      />
+      <div class="form-checkbox">        
+        <span class="icon new":disabled="disabled"></span>
+        <label for="buildup-name" >Add product</label>
       </div>
-      <button 
-        class="remove-button" 
+      <span 
+        class="icon remove" 
         @click="$emit('remove')" 
         :disabled="disabled"
-      >×</button>
+      ></span>
     </div>
     
-    <div class="form-section">
-      <div v-if="mappedProducts.length === 0" class="no-products-message">
+    <div class="products-container">
+      <div v-if="buildupData.length === 0" class="no-products-message">
         No products in this mapping element. Click "Add Product" to add one.
       </div>
       
-      <MappedProduct
-        v-for="(product, index) in mappedProducts"
-        :key="product.id || index"
-        :product="product"
-        :disabled="disabled"
-        @update:quantity="updateProductQuantity(index, $event)"
-        @remove="removeProduct(index)"
-      />
+      <div v-else>
+        <!-- Header Row -->
+        <div class="product-table">
+        <div class="product-table-row product-table-header">
+          <div class="name-col"></div>
+          <div class="unit-col">Unit</div>
+          <div class="qty-col">Quantity</div>
+          <div class="kpi-col">{{ $props.selectedIndicatorKey }}</div>
+          <div class="remove-col"></div>   
+        </div>
+        <!-- Products -->
+        <MappedProduct
+          v-for="rowId in rowIds"
+          :disabled="disabled"
+          :selectedIndicatorKey="$props.selectedIndicatorKey"
+          :selectedLifeCycle="$props.selectedLifeCycle"
+          :key="rowId"
+          :rowId="rowId"
+          :buildupData="buildupData"
+          @update:quantity="emitQuantityUpdate"
+        />
+      </div>
+      </div>
       
-      <button 
-        class="save-button"
-        @click="addProduct"
-        :disabled="disabled"
-      >
-        + Add Product
-      </button>
+
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, type PropType, ref, computed, watch } from 'vue'
+
+import { getDefaultLifeCycleStages } from '@/views/shared/LifeCycle/LifeCycleDefinitons';
+import type { ColumnDefinition } from '@/views/shared/ColumnSelector/ColumnDefinition';
+import type { ImpactCategoryKey } from 'lcax';
+
 import MappedProduct from './MappedProduct.vue'
-import type { IProduct } from "@/types/product/IProduct";
-import type { IProductWithCalculatedImpacts } from '@/types/epdx/IProductWithCalculatedImpacts';
 
 export default defineComponent({
   name: 'MappingElement',
@@ -60,79 +72,159 @@ export default defineComponent({
       type: String,
       required: true
     },
-    mappedProducts: {
-      type: Array as PropType<(IProduct & IProductWithCalculatedImpacts)[]>,
+    buildupData: {
+      type: Array as PropType<ColumnDefinition[]>,
       default: () => []
+    },
+    rowIds: {
+      type: Array as PropType<number[]>
     },
     disabled: {
       type: Boolean,
       default: false
+    },
+    selectedIndicatorKey: {
+      type: String as PropType<ImpactCategoryKey>,
+      default: "gwp"
+    },
+    selectedLifeCycle: {
+      type: Object as PropType<ColumnDefinition[]>,
+      default: getDefaultLifeCycleStages()
     }
   },
-  emits: ['remove', 'update:mappingName', 'update:products'],
+  emits: ['selectMappingElement','remove', 'update:mappingName', "update:quantity", "update:products"],
   setup(props, { emit }) {
-    // Local state for editing the mapping name
-    const localMappingName = ref(props.mappingName);
+
+    const productMapIdCol = computed(() =>
+    props.buildupData.find((c) => c.key === "productMapId")
+    );
+
     
-    // Update local name when prop changes
-    watch(() => props.mappingName, (newName) => {
-      localMappingName.value = newName;
-    });
-    
-    // Handle updating the mapping name
-    const updateMappingName = () => {
-      // Only emit if name has changed and isn't empty
-      if (localMappingName.value !== props.mappingName && 
-          localMappingName.value.trim() !== '') {
-        emit('update:mappingName', localMappingName.value);
-      } else {
-        // Reset to original if empty
-        localMappingName.value = props.mappingName;
-      }
-    };
-    
-    // Add a new placeholder product
-    const addProduct = () => {
-      // Create a copy of the current products
-      const updatedProducts = [...props.mappedProducts];
-      
-      // Emit the updated products array
-      emit('update:products', updatedProducts);
-    };
-    
-    // Update a product's quantity
-    const updateProductQuantity = (index: number, quantity: number) => {
-      // Create a copy of the current products
-      const updatedProducts = [...props.mappedProducts];
-      
-      // Update the quantity for the specified product
-      if (updatedProducts[index]) {
-        updatedProducts[index] = {
-          ...updatedProducts[index],
-          quantity
-        };
-        
-        // Emit the updated products array
-        emit('update:products', updatedProducts);
-      }
-    };
-    
-    // Remove a product
-    const removeProduct = (index: number) => {
-      // Create a copy without the specified product
-      const updatedProducts = props.mappedProducts.filter((_, i) => i !== index);
-      
-      // Emit the updated products array
-      emit('update:products', updatedProducts);
-    };
+    function emitQuantityUpdate(payload: {productMapId: string, newQuantity: number}) {
+      console.log(`mapping element emitting quantity update ${payload.productMapId} to ${payload.newQuantity}`)
+    emit("update:quantity", payload );
+    }
+ 
+    function emitSelection() {
+  emit('selectMappingElement', props.mappingName);
+}
     
     return {
-      localMappingName,
-      updateMappingName,
-      addProduct,
-      updateProductQuantity,
-      removeProduct
+      productMapIdCol,
+      emitQuantityUpdate,
+      emitSelection,
     };
   }
 });
 </script>
+
+<style scoped>
+
+.mapping-name-input {
+  padding: var(--spacing-sm)
+}
+
+.mapping-item {
+  border: 1px solid var(--color-grey);
+  border-radius: var(--rad-small);
+  padding: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  background-color: var(--color-light);
+}
+
+.products-container {
+  width: 100%;
+  min-width: 0; /* Important for ellipsis to work within flex/grid parents */
+}
+.product-table-header,
+.mapped-product {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.product-table-cell {
+  flex: 1 1 5rem;
+  padding: 0 0.5rem;
+  font-size: 0.9em;
+  color: #888;
+  text-align: left;
+}
+.product-name-header {
+  flex: 2 1 9rem; /* wider for name */
+}
+
+.products-container,
+.product-table {
+  width: 100%;
+  min-width: 0;
+}
+
+.product-table {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+}
+
+.product-table-row {
+  display: grid;
+  grid-template-columns:
+    minmax(0,2.2fr)    /* name: takes at least half, grows */
+    minmax(2rem,.7fr)  /* unit */
+    minmax(3rem,.8fr)  /* qty */
+    minmax(5.5rem,1fr) /* gwp */
+    min-content;       /* remove button */
+  gap: 0.5rem;
+  width: 100%;
+  min-width: 0;       /* for ellipsis! */
+  align-items: center;
+}
+
+.product-table-header {
+  color: var(--color-text-grey);
+  background: none;
+  margin-top: var(--spacing-tiny);
+  margin-bottom: var(--spacing-tiny);
+  min-height: 1.2em;
+  font-size: var(--font-size-small);
+  user-select: none;
+}
+
+.mapped-product {
+  min-height: 2em;
+}
+
+/* Ensure cells do not overflow, especially name ellipsis */
+.name-col, .unit-col, .qty-col, .kpi-col {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.product-name-ellipsis {
+  display: inline-block;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.remove-col {
+  justify-self: end;
+}
+
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.quantity-input {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+
+</style>
+
+

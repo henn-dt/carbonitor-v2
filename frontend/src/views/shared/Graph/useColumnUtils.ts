@@ -25,7 +25,11 @@ export function useColumnUtils(props: {
   
   // Get unique units for the unit filter dropdown
   const availableUnits = computed(() => {
-    const unitColumn = props.precalculatedTable.find(col => col.key === 'epd_declaredUnit');
+    // Try to find "epd_declaredUnit", otherwise fall back to "unit"
+    const unitColumn = 
+      props.precalculatedTable.find(col => col.key === 'epd_declaredUnit') ||
+      props.precalculatedTable.find(col => col.key === 'unit');
+  
     if (!unitColumn || !unitColumn.columnValues) return [];
     
     const uniqueUnits = new Set<string>();

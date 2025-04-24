@@ -40,6 +40,7 @@
 			v-model="showColumnSelector"
 			:items="moreImpactOptions"
 			:selected="selectedColumns"
+			:singleSelection="singleSelection"
 			@update="updateImpactColumns"
 		>
 			<template #header>
@@ -58,23 +59,76 @@
 export default defineComponent({
 	name: 'ImpactIndicatorSelector',
 	components: { ColumnSelector },
+	props: {
+	    // If single selection mode (selecting one deselects the previous)
+	    singleSelection: {
+	      type: Boolean,
+	      default: false
+	    },
+	    // Optionally provide initial selection(s)
+	    selected: {
+	      type: Array as () => ColumnDefinition[],
+	      default: undefined
+	    }
+	  },
 	emits: ['columnsChanged'],
-	setup(_, { emit }) {
+	setup(props, { emit }) {
 		// State
 		const showColumnSelector = ref(false);
-		const selectedColumns = ref<ColumnDefinition[]>(getDefaultMoreImpactCategoryColumns());
-		const activeFixedCategories = ref<ColumnDefinition[]>( fixedImpactCategories.filter(category => category.default) );
+
+    	// Use the selected prop for initial value if provided
+    	const initialSelected = props.selected && props.selected.length
+    	  ? props.selected
+    	  : getDefaultMoreImpactCategoryColumns();
+
+    	// Separate for fixed and "more" columns
+    	// If "selected" contains fixed category keys: distribute accordingly
+    	const inFixed = (c: ColumnDefinition) => fixedImpactCategories.some(fc => fc.key === c.key);
+
+    	const initialFixed = initialSelected.filter(inFixed);
+    	const initialMore = initialSelected.filter(c => !inFixed(c));
+
+    	// State for selected columns
+    	const selectedColumns = ref<ColumnDefinition[]>(initialMore);
+    	const activeFixedCategories = ref<ColumnDefinition[]>(initialFixed.length > 0
+    	  ? initialFixed
+    	  : fixedImpactCategories.filter(category => category.default)
+    	);
 
 		// Methods
 		const isActive = (category: ColumnDefinition) => activeFixedCategories.value.some(cat => cat.key === category.key);
 
 		const toggleCategory = (category: ColumnDefinition) => {
-			if (isActive(category)) { activeFixedCategories.value = activeFixedCategories.value.filter(cat => cat.key !== category.key); }
-			else { activeFixedCategories.value.push(category); }
-			emitCombinedCategories();
-		};
+    	  if (props.singleSelection) {
+    	    // Single selection: only one fixed can be active at a time
+    	    if (!isActive(category)) {
+    	      activeFixedCategories.value = [category];
+    	      selectedColumns.value = []; // Optionally, clear more columns in single mode
+    	    }
+    	    // else do nothing (no deselection in single mode)
+    	  } else {
+    	    // Multi-select: behave as before
+    	    if (isActive(category)) {
+    	      activeFixedCategories.value = activeFixedCategories.value.filter(cat => cat.key !== category.key);
+    	    } else {
+    	      activeFixedCategories.value.push(category);
+    	    }
+    	  }
+    	  emitCombinedCategories();
+    	};
 
-		const updateImpactColumns = (columns: ColumnDefinition[]) => { selectedColumns.value = columns; emitCombinedCategories(); };
+    	const updateImpactColumns = (columns: ColumnDefinition[]) => {
+    	  if (props.singleSelection && columns.length > 0) {
+    	    // Only keep the last selected
+    	    selectedColumns.value = [columns[columns.length - 1]];
+    	    // And force fixed none (optional: clear fixed when "other" selected)
+    	    activeFixedCategories.value = [];
+    	  } else {
+    	    selectedColumns.value = columns;
+    	  }
+    	  emitCombinedCategories();
+    	};
+
 		const emitCombinedCategories = () => emit('columnsChanged', [...activeFixedCategories.value, ...selectedColumns.value]);
 
 		return {
@@ -84,7 +138,8 @@ export default defineComponent({
 			fixedImpactCategories,
 			isActive,
 			toggleCategory,
-			updateImpactColumns
+			updateImpactColumns,
+			singleSelection: props.singleSelection
 		};
 	}
 });

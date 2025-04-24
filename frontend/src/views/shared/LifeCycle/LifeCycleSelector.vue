@@ -27,8 +27,14 @@
 
 	export default defineComponent({
 		name: 'LifeCycleSelector',
+    	props: {
+    	    singleReuse: {
+    	        type: Boolean,   //turning on reuse will turn off everything else.
+    	        default: false
+    	    }
+    	},
 		emits: ['lifeCycleChanged'],
-		setup(_, { emit }) {
+		setup(props, { emit }) {
 			// State
 			const selectedStages = ref<ColumnDefinition[]>(getDefaultLifeCycleStages());
 
@@ -37,10 +43,45 @@
 			selectedStages.value.some(cat => cat.key === category.key);
 
 			const toggleCategory = (category: ColumnDefinition) => {
-				if (isActive(category)) { selectedStages.value = selectedStages.value.filter(stage => stage.key !== category.key);}
-				else { selectedStages.value = [...selectedStages.value, category]; }
-				emit('lifeCycleChanged', selectedStages.value);
-			};
+            const isReuse = category.key === 'Reuse';
+            const wasActive = isActive(category);
+
+            if (props.singleReuse) {
+                if (isReuse) {
+            		// Prevent removing the last active (Reuse)
+            		if (selectedStages.value.length === 1 && selectedStages.value[0].key === 'Reuse' && wasActive) {
+            		    return;
+            		}
+            		// Always select only "reuse" (unless already the sole active)
+            		selectedStages.value = wasActive ? selectedStages.value : [category];
+                } else {
+                    // If "reuse" was selected, replace it
+                    if (selectedStages.value.length === 1 && selectedStages.value[0].key === 'Reuse') {
+                        selectedStages.value = [category];
+                    } else {
+                        // Toggle this non-reuse stage
+                        if (wasActive) {
+							// Prevent removing if this is the last active
+							if (selectedStages.value.length === 1) return;
+                            selectedStages.value = selectedStages.value.filter(stage => stage.key !== category.key);
+                        } else {
+                            selectedStages.value = [...selectedStages.value, category];
+                        }
+                    }
+                }
+            } else {
+                // Default: classic multi-select
+                if (wasActive) {
+					// Prevent removing the last active
+					if (selectedStages.value.length === 1) return;
+                    selectedStages.value = selectedStages.value.filter(stage => stage.key !== category.key);
+                } else {
+                    selectedStages.value = [...selectedStages.value, category];
+                }
+            }
+
+            emit('lifeCycleChanged', selectedStages.value);
+        };
 
 			return {
 				selectedStages,

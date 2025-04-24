@@ -6,12 +6,21 @@ import type { IBuildup } from '@/types/buildup/IBuildup';
 import { TYPES } from '@/di/types';
 import { Buildup } from '@/types/buildup/Buildup';
 import { getAuthStore, getBuildupStore } from '@/stores/storeAccessor';
+import { BuildupToBackend } from '@/types/buildup/BuildupToBackend';
 
 @injectable()
 export class BuildupService implements IBuildupService {
     constructor(
         @inject(TYPES.BuildupRepository) private buildupRepository: IBuildupRepository
     ) {}
+
+    private updatedStore() {
+        const buildupStore = getBuildupStore();
+        const currentTime = new Date().getTime();
+        buildupStore.setNeedsRefresh(false)
+        buildupStore.setNeedsProcessing(true)
+        buildupStore.setLastFetchTimestamp(currentTime)
+    }
     //async initBuildups(): Promise
     async getBuildups(): Promise<IBuildup[]> {
         try {
@@ -53,18 +62,13 @@ export class BuildupService implements IBuildupService {
     private async performFullRefresh(): Promise<IBuildup[]> {
         const buildupStore = getBuildupStore();
         try {
-            const buildups = await this.buildupRepository.getBuildups();
-            const currentTime = new Date().getTime();
-            
-            
+            const buildups = await this.buildupRepository.getBuildups();           
             // Replace all buildups in the store
             buildupStore.setBuildups(buildups);
             console.log(`Buildup store refreshed with ${buildups.length} elements`);
             
             // Update store metadata
-            buildupStore.setNeedsRefresh(false);
-            buildupStore.setLastFetchTimestamp(currentTime);
-            
+            this.updatedStore()         
             return [...buildups]; // Return a copy
         } finally {
             buildupStore.setLoading(false);
@@ -84,9 +88,7 @@ export class BuildupService implements IBuildupService {
             
             // Option 2: Fetch all and filter client-side (fallback if API doesn't support incremental)
             const allBuildups = await this.buildupRepository.getBuildups();
-            const currentTime = new Date().getTime();
-            
-            
+           
             // Find which buildups are new or updated
             const existingBuildupMap = new Map(buildupStore.buildups.map(b => [b.id, b]));
             const newBuildups: IBuildup[] = [];
@@ -130,7 +132,7 @@ export class BuildupService implements IBuildupService {
                 }
                 
                 // Update the timestamp
-                buildupStore.setLastFetchTimestamp(currentTime);
+                this.updatedStore()   
             } else {
                 console.log('No changes detected in buildups');
             }
@@ -324,13 +326,16 @@ export class BuildupService implements IBuildupService {
                 user_id_updated: currentUserId
             };
             
+            const payload = new BuildupToBackend(buildupWithUserData)
+
             // Call repository to save in backend
-            const createdBuildup = await this.buildupRepository.createBuildup(buildupWithUserData);
+            const createdBuildup = await this.buildupRepository.createBuildup(payload);
             const buildupDTO = new Buildup(createdBuildup);
             
             // Update the store
             buildupStore.addBuildup(buildupDTO);
             buildupStore.setLoading(false);
+            this.updatedStore()
             
             return buildupDTO;
         } catch (error) {
@@ -359,14 +364,17 @@ export class BuildupService implements IBuildupService {
                 user_id_updated: currentUserId
             };
 
+            const payload = new BuildupToBackend(buildupWithUserData)
+
             // Call repository to update in backend
-            const updatedBuildup = await this.buildupRepository.updateBuildup(id, buildupWithUserData);
+            const updatedBuildup = await this.buildupRepository.updateBuildup(id, payload);
             const buildupDTO = new Buildup(updatedBuildup);
 
             
             // Update the store
             buildupStore.updateBuildup(buildupDTO);
             buildupStore.setLoading(false);
+            this.updatedStore()
             
             return buildupDTO;
         } catch (error) {
@@ -389,6 +397,7 @@ export class BuildupService implements IBuildupService {
                 // Update the store by removing the buildup
                 buildupStore.removeBuildup(id);
             }
+            this.updatedStore()
             
             buildupStore.setLoading(false);
             return result;
@@ -426,6 +435,7 @@ export class BuildupService implements IBuildupService {
             
             return result;
         } finally {
+            this.updatedStore()
             buildupStore.setLoading(false);
         }
     }

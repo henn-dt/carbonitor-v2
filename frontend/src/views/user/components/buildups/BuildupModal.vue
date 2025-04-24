@@ -1,79 +1,87 @@
 <template>
-
     <div class="modal-backdrop" @click.self="closeModal">
             <!-- Overlay to capture clicks outside the confirm delete button -->
             <div v-if="showDeleteConfirm" class="delete-overlay" @click="cancelDelete"></div>
       <div class="card modal full-screen">
         <div class="sidebar-page">
           <div class="page-content">
-            <div class="card-header">
-              <input 
-              id="buildup-name" 
-              v-model="buildupData.name"
-              type="text"  
-              placeholder="Name of the Buildup"
-              ref="buildupNameInput"/>
-              <button class="close-button" @click="closeModal">×</button>
+
+            <div class="sidebar-header" id="buildup-header">
+              <div class="flex-row">
+                <h2 class="content-label">{{ isNewBuildup ? 'Create New Buildup' : 'Edit Buildup' }}</h2>
+                <span class="icon close" @click="closeModal"></span>
+              </div>
+              <div class="flex-row">
+                <div class="form-group cozy">
+                  <label for="buildup-name" >Name</label>
+                    <input 
+                  class="sidebar-title"
+                  id="buildup-name" 
+                  v-model="buildupData.name"
+                  type="text"  
+                  placeholder="Name of the Buildup"
+                  ref="buildupNameInput"/>
+                </div>
+                <div class="form-group cozy small-size">
+                  <label for="unit-type" >Unit</label>
+                  <select id="unit-type" 
+                    v-model="buildupData.unit" >
+                    <option v-for="unit in unitTypes" :key="unit" :value="unit" class="list element label">
+                      {{ unit }}
+                    </option>
+                  </select>                  
+                </div>
+                <div class="form-group cozy small-size">
+                  <label for="buildup-quantity" >Quantity</label>
+                    <input 
+                  class="quantity-input"
+                  id="buildup-quantity" 
+                  v-model="buildupData.quantity"
+                  type="number"  
+                  placeholder="Quantity of the Buildup"
+                  ref="buildupQuantityInput"
+                  min="0.001"
+                  step="0.001"
+                  />
+                </div>
+                <div class="form-group cozy small-size">
+                  <label for="buildup-quantity" >{{ selectedIndicatorLabel }}</label>
+                  <span> {{ selectedIndicatorTotalImpact.toFixed(2) }} </span>
+
+                </div>
+
+              </div>
+              <div v-if="!isNameUnique" class="validation-error">{{ validationErrors.name }}</div>
             </div>
-            <div v-if="!isNameUnique" class="validation-error">{{ validationErrors.name }}</div>
-        
-            <div class="card-body">
-              <!-- Buildup Main Information -->
-              <div class="form-section" id="buildup-header">
-                <div class="section-header"  @click="toggleSection(`buildup-header`)">
-                  <a>Buildup key facts</a>
-                  <div class="form-group static-size">
-                    <label for="unit-type" class="form-label">Unit</label>
-                    <select id="unit-type" 
-                      v-model="buildupData.unit" >
-                      <option v-for="unit in unitTypes" :key="unit" :value="unit" class="list element label">
-                        {{ unit }}
-                      </option>
-                    </select>
-                  <span class="chevron">▼</span>
-                </div>
-
-                  <!-- Header row with name and type -->
-                  <div class="flex-row">
-
-
-                    
-              </div>
             
-                    <!-- <div class="form-group static-size">
-                    <label for="buildup-type" class="form-label">Unit</label>
-                    <select id="buildup-type" 
-                            v-model="buildupData.unit" >
-
-                      <option v-for="type in buildupTypes" :key="type" :value="type" class="list element label">
-                        {{ type }}
-                      </option>
-                      <option>m2</option>
-                      <option>m3</option>
-                    </select>
-                  </div> -->
-                </div>
-            
-                <div class="form-group">
-                  <label for="buildup-description" class="form-label">Description</label>
-                  <textarea 
-                    id="buildup-description" 
-                    v-model="buildupData.description" 
-                    placeholder="Enter description"
-                    rows="3"
-                  ></textarea>
-                </div>
+            <div class="sidebar-body">
+              <div class="filter-groups-container">
+              <div class="description-container">
+                <label for="buildup-description">Description</label>
+                <textarea 
+                  id="buildup-description" 
+                  v-model="buildupData.description" 
+                  placeholder="Enter description"
+                  rows="3"
+                ></textarea>
               </div>
-              <!-- Products Section -->
+            </div>
+
+
+            <!-- Products Section -->
               <BuildupProductSection 
-              :combinedData="combinedBuildup"
-              @update:mappedProducts="handleMappedProductsUpdate"
-              :disabled="isLoading || isSaving || isDeleting"
-              />
-              <!-- Classification Section -->
-            </div>
+                :selectedIndicatorKey="selectedIndicatorKey"
+                :selectedLifeCycle="selectedLifeCycles"
+                :buildupData="productTableColumns"
+                :disabled="isLoading || isSaving || isDeleting"
+                @update:quantity="handleProductQuantityUpdate"
+                @update:products="handleProductsUpdate"
+                @selectMappingElement="onMappingElementSelected"
+                />
+                <!-- Classification Section -->
+              </div>
 
-            <div class="card-footer">
+            <div class="sidebar-footer">
               <button 
                 class="cancel-button" 
                 @click="closeModal"
@@ -114,20 +122,59 @@
             </div>
           </div>
 
-          <div class="page-content">
-                    <!-- Speckle Viewer -->
+          <div 
+
+          
+          class="page-content">
+
+          <div class="flex-row">
+                <div class="form-group cozy">
+                  <label for="buildup-name" >Speckle model url</label>
+                    <input 
+                  class="sidebar-title"
+                  id="model-url" 
+                  v-model="modelUrl"
+                  type="text"  
+                  placeholder="url of the speckle model"
+                  ref="speckleModelInput"/>
+                </div>
+          </div>
+          <div class="sidebar-body">
+          <!-- Speckle Viewer  Parent Modal window--> 
                     <SpeckleViewer 
                      v-if="speckleModelData" 
                     :modelData="speckleModelData" 
+                    :selectedCollections="selectedMappingElement"
                     class="entity-model-viewer"
-                    />  
+                    @update:modelSelect="onModelSelect"
+                    >  
+                      <template #controls="{viewer}">
+                        <BuildupControlBar v-if="viewer" :viewer="viewer" />
+                      </template>
+                </SpeckleViewer>
+
+                <BuildupModalGraph
+                  :precalculatedTable="productTableColumns"
+                  :filteredIndices="allRowIndices"
+                  :selectedIndices="allRowIndices"
+                  :selectedIndicator="selectedIndicatorKey"
+                  @selectMappingElement="onMappingElementSelected"
+                  ></BuildupModalGraph>
+            </div>       
+                
+
+              
           </div> <!-- Page Content -->
           <SelectorBar>
 
             <!-- Impact Indicator Selector -->
             <div class="selector-items-container">
               <ImpactIndicatorSelector 
+                :selected="selectedIndicators"
+                :singleSelection="true"
                 class="buildup-indicator-selector" 
+                @columnsChanged="onMoreIndicatorsChanged"
+
               />
             </div>
 
@@ -135,6 +182,8 @@
             <div class="selector-items-container">
               <LifeCycleSelector 
               class="buildup-lifecycle-selector" 
+              :singleReuse="true"
+              @lifeCycleChanged="onLifeCycleChanged"
               />
             </div>
             </SelectorBar>
@@ -146,22 +195,34 @@
 <script lang="ts">
 import { defineComponent, ref, computed, watch , onMounted, onBeforeUnmount, nextTick} from 'vue';
 
+//import enums
 import { units } from '@/types/epdx/unitsEnum'
+import { getDefaultLifeCycleStages } from '@/views/shared/LifeCycle/LifeCycleDefinitons';
+import type { ColumnDefinition } from '@/views/shared/ColumnSelector/ColumnDefinition';
+import { getImpactCategoryDefinitionsByKeys } from '@/views/shared/ImpactIndicator/ImpactIndicatorDefinitions';
+import type { ImpactCategoryKey } from 'lcax';
+import type { LifeCycleGroups } from '@/types/epdx/ICalculatedImpact';
 
+// import types
 import { Buildup } from '@/types/buildup/Buildup';
 import type { IBuildup } from '@/types/buildup/IBuildup';
 import type { IBuildupWithProcessedProducts } from '@/types/epdx/IBuildupWithProcessedProducts';
 
-import type { IProduct } from "@/types/product/IProduct";
-import type { IProductWithCalculatedImpacts } from '@/types/epdx/IProductWithCalculatedImpacts';
+// import store and services
 import { getBuildupStore } from '@/stores/storeAccessor';
-import { getBuildupProcessService, getBuildupService } from '@/services/ServiceAccessor';
+import { getBuildupProcessService, getBuildupService, getImpactCalculationService } from '@/services/ServiceAccessor';
+import { BuildupDataService } from './BuildupDataService';
+
+
 //import components
 import SelectorBar from '@/views/shared/SelectorBar/SelectorBarSidebar.vue';
 import SpeckleViewer , {type SpeckleModelData }from '@/views/shared/SpeckleViewer/SpeckleViewer.vue'
 import ImpactIndicatorSelector from '@/views/shared/ImpactIndicator/ImpactIndicatorSelector.vue';
 import LifeCycleSelector from '@/views/shared/LifeCycle/LifeCycleSelector.vue';
 import BuildupProductSection from '@/views/user/components/buildups/buildupModal/BuildupProductSection.vue'
+import BuildupControlBar from '@/views/user/components/buildups/speckleViewer/BuildupControlBar.vue';
+import BuildupModalGraph from '@/views/user/components/buildups/buildupModal/BuildupModalGraph.vue';
+
 
 
 export default defineComponent({
@@ -171,7 +232,9 @@ export default defineComponent({
     SelectorBar,
     ImpactIndicatorSelector,
     LifeCycleSelector,
-    BuildupProductSection
+    BuildupProductSection,
+    BuildupControlBar,
+    BuildupModalGraph
   },
   props: {
     buildupId : {
@@ -183,64 +246,42 @@ export default defineComponent({
       default: true
     }
   },
-  emits: ['close', 'save', 'delete'],
+  emits: ['close', 'save', 'delete', 'onMappingElementSelected'],
   setup(props, { emit }) {
 
     //enums
     const unitTypes = Object.values(units)
 
+    //stores and services
     const buildupStore = getBuildupStore();
     const buildupProcessService = getBuildupProcessService()    
-    const buildupService = getBuildupService()
+    const impactCalculationService = getImpactCalculationService()
 
+    
+    // state
     // Track if we're currently performing an operation
     const isSaving = computed(() => buildupStore.loading);
     const isDeleting = ref(false);
     const showDeleteConfirm = ref(false);
     const isLoading = ref(true);
 
+    const selectedIndicators = ref(getImpactCategoryDefinitionsByKeys(["gwp"]));
+    const selectedLifeCycles = ref(getDefaultLifeCycleStages());
+
+    const treemapGrouping = ref<'mapping' | 'product'>('mapping');
+    const showLifeCycleBreakdown = ref(false);
+
     // Validation related refs
     const validationErrors = ref({
       name: ''
     });
 
+
+    // Logic
     // Get the buildup from store using index
     const originalBuildup = computed<IBuildup | null>(() => {
       const buildups = buildupStore.buildups;
       return buildups.length > props.buildupId ? buildups[props.buildupId] : null;
-    });
-    
-    // Get the buildup ID
-    const buildupId = computed<number | null>(() => {
-      return originalBuildup.value?.id || null;
-    });
-    
-    // Get the processed data
-    const processedData = computed(() => {
-      if (!buildupId.value) return null;
-      return buildupStore.findProcessedDataById(buildupId.value);
-    });
-    
-    // Combined view for display - always returns a combined structure
-    const combinedBuildup = computed<IBuildup & IBuildupWithProcessedProducts>(() => {
-      if (buildupId.value) {
-        // For existing buildups, try to get the combined view from the service
-        try {
-          return buildupProcessService.getCombinedBuildup(buildupId.value);
-        } catch (err) {
-          console.error('Error getting combined buildup:', err);
-          // Fall back to combining manually
-        }
-      }
-
-      // For new buildups or if the service call failed,
-      // manually combine the current buildupData with empty processed structure
-      return {
-        ...buildupData.value,
-        mappedProducts: {},
-        processedProducts: [],
-        isFullyProcessed: false
-      };
     });
     
     // Create a default buildup with all required properties
@@ -258,24 +299,68 @@ export default defineComponent({
         products: {},
         results: {},
         classification: [],
-        metaData: {}
+        metaData: {"model_url": "", "model_mapping": ""}
       };
     };
-    
+
     // Create a deep copy of the buildup or create a new one with all required fields
-    const buildupData = ref<IBuildup>(createDefaultBuildup());
-    
-    // Initialize local copy from original when it changes
-    watch(originalBuildup, (newValue) => {
-      if (newValue) {
-        buildupData.value = new Buildup(JSON.parse(JSON.stringify(newValue)));
-        isLoading.value = false;
+    const buildupData = ref<IBuildup>(originalBuildup.value || createDefaultBuildup());
+      watch(
+      buildupData,
+        () => { processLocalBuildup(); },
+        { deep: true }
+        );
+
+    const localProcessed = ref<IBuildupWithProcessedProducts | null>(null);
+
+    async function processLocalBuildup() {
+      isLoading.value = true
+      localProcessed.value = await impactCalculationService.processSingleBuildupImpacts(buildupData.value);
+      isLoading.value = false
+    }
+
+    const combinedBuildup = computed<IBuildup & IBuildupWithProcessedProducts>(() => {
+      if (localProcessed.value) {
+          return { ...buildupData.value,
+                  ...localProcessed.value
+          }
       }
-    }, { immediate: true });
+      // For new buildups or if the service call failed,
+      // manually combine the current buildupData with empty processed structure
+      return {
+        ...buildupData.value,
+        mappedProducts: {},
+        processedProducts: [],
+        isFullyProcessed: false
+      };
+
+    })
+    const productTableColumns = computed<ColumnDefinition[]> (() => {
+      const buildupDataTable = BuildupDataService.prepareProductsInBuildupTable(combinedBuildup.value, selectedIndicators.value, selectedLifeCycles.value)
+      return buildupDataTable
+    })
+
+    const allRowIndices = computed(() => {
+      const anyCol = productTableColumns.value.length > 0 ? productTableColumns.value[0] : undefined;
+      return anyCol && anyCol.columnValues ? anyCol.columnValues.map(x => x.rowId) : [];
+    })
 
 
 
     // Speckle Model Data
+    const modelUrl = computed({
+      get() {
+        return buildupData.value.metaData?.model_url || '';
+      },
+      set(val) {
+        // Create the metaData object if it doesn't exist
+        if (!buildupData.value.metaData) {
+          buildupData.value.metaData = {};
+        }
+        buildupData.value.metaData.model_url = val;
+      }
+    });
+
     const speckleModelData = computed<SpeckleModelData | null>(() => {
         if (buildupData.value == null) {
           return null
@@ -335,7 +420,7 @@ const saveBuildup = () => {
   
   // Create a copy but maintain the BuildupEntityType
   const buildupToSave = { ...buildupData.value };
-  emit('save', new Buildup(buildupToSave));
+  emit('save', buildupToSave);
 };
     
 // delete workflow with confirm and state update
@@ -385,24 +470,16 @@ const handleKeydown = (event: KeyboardEvent) => {
   }
 };
 
-    // Load processed data if needed
-    const ensureProcessedData = () => {
-      if (originalBuildup.value && (!processedData.value?.isFullyProcessed)) {
-        try {
-          isLoading.value = true;
-          buildupProcessService.processBuildup(originalBuildup.value.id);
-        } catch (err) {
-          console.error('Error processing buildup:', err);
-        } finally {
-          isLoading.value = false;
-        }
-      }
-    };
-    
+
     // Set up event listeners and ensure data is loaded
     onMounted(() => {
+      if (originalBuildup.value) {
+        buildupData.value = new Buildup(originalBuildup.value);
+      }
+
       window.addEventListener('keydown', handleKeydown);
-      ensureProcessedData();
+      processLocalBuildup()
+      isLoading.value = false
     });
     
     // Clean up event listeners
@@ -410,82 +487,68 @@ const handleKeydown = (event: KeyboardEvent) => {
       window.removeEventListener('keydown', handleKeydown);
     });
 
-    const toggleSection = (sectionId: string) => {
-      const section = document.getElementById(sectionId);
-      if (section) {
-        section.classList.toggle('collapsed');
-      }
+
+  const handleProductQuantityUpdate = (payload : {productMapId: string, newQuantity: number}) => {  
+    console.log(`modal receiving quantity update  ${payload.productMapId} to ${payload.newQuantity}`)
+    if (!buildupData.value.results) return
+    if (buildupData.value.results[payload.productMapId]['quantity']) {
+      buildupData.value.results[payload.productMapId]['quantity'] = payload.newQuantity 
+    }
+
+  }
+  
+
+
+  const handleProductsUpdate= () => {}
+
+ 
+    
+    const onMoreIndicatorsChanged = (columns: ColumnDefinition[]) => {
+      selectedIndicators.value = columns;
+    };
+    
+    const onLifeCycleChanged = (stages: ColumnDefinition[]) => {
+      selectedLifeCycles.value = stages;
     };
 
-/**
- * Handle updates to mappedProducts from the BuildupProductSection component
- * This updates both the local buildupData (products/results) and triggers reprocessing
- */
- const handleMappedProductsUpdate = async (
-  newMappings: Record<string, (IProduct & IProductWithCalculatedImpacts)[]>
-) => {
-  // 1. Convert the mapped products back to the format expected by buildupData
-  const updatedProducts: Record<string, any> = {};
-  const updatedResults: Record<string, any> = {};
-  
-  // Track all product IDs to ensure uniqueness
-  let productCounter = 1;
-  
-  // Process each mapping group
-  Object.entries(newMappings).forEach(([mappingId, products]) => {
-    // For each product in this mapping
-    products.forEach((product) => {
-      // Create a unique ID for this product
-      const productId = `product_${productCounter++}`;
-      
-      // Create the product reference
-      updatedProducts[productId] = {
-        overrides: {
-          meta_data: {
-            model_mapping_element_id: mappingId
-          }
-        }
-      };
-      
-      // Create the corresponding result entry
-      updatedResults[productId] = {
-        quantity: product.quantity || 1
-      };
-    });
-  });
-  
-  // 2. Create an updated copy of buildupData
-  const updatedBuildupData = { 
-    ...buildupData.value,
-    products: updatedProducts,
-    results: updatedResults
-  };
-  
-  // 3. Update local buildupData
-  buildupData.value = updatedBuildupData;
-  
-  // 4. If this is an existing buildup, trigger reprocessing
-  if (buildupId.value && !isNewBuildup.value) {
-    try {
-      isLoading.value = true;
-      
-      // Update the buildup in the store first
-      await buildupService.updateBuildup(buildupId.value, updatedBuildupData);
-      
-      // Then trigger reprocessing to refresh impacts
-      await buildupProcessService.processBuildup(buildupId.value);
-      
-      console.log('Buildup updated and reprocessed with new mappings');
-    } catch (err) {
-      console.error('Error updating and reprocessing buildup:', err);
-    } finally {
-      isLoading.value = false;
+
+    const selectedMappingElement = ref<string[]>([])
+
+    function onMappingElementSelected(mappingName : string) {
+      selectedMappingElement.value = [mappingName]
     }
-  } else {
-    // For new buildups, just log the change - we'll process when saving
-    console.log('Updated local buildup data with new mappings');
-  }
-};
+
+    function onModelSelect() {}   
+
+    const selectedIndicator = computed(() =>
+      selectedIndicators.value && selectedIndicators.value.length > 0
+        ? selectedIndicators.value[0]
+        : { key: 'gwp', label: 'GWP total', tooltip: 'Global Warming Potential (kg CO2 eq.)' }
+    );
+
+    const selectedIndicatorLabel = computed(() => selectedIndicator.value.label );
+    const selectedIndicatorKey = computed(() => selectedIndicator.value.key as ImpactCategoryKey);
+
+    const selectedIndicatorTotalImpact = computed (() => {
+      const products = combinedBuildup.value?.processedProducts || [];
+      const indicator = selectedIndicatorKey.value
+      const phases = selectedLifeCycles.value
+
+      let total = 0;
+      products.forEach(prod => {
+        if (!prod.calculatedImpacts || !prod.calculatedImpacts[indicator]) return;
+        const impacts = prod.calculatedImpacts[indicator];
+        // phases is an array like ['Production', 'Operation', ...], sum values
+        phases.forEach(phase => {
+          const phaseKey = phase.key as LifeCycleGroups;
+          if (typeof impacts[phaseKey] === 'number') {
+            total += impacts[phaseKey];
+          }
+        });
+      });
+      return total;
+
+    })
 
 return {
       //enums
@@ -493,9 +556,19 @@ return {
 
       // data objects
       speckleModelData,
+      selectedMappingElement,
+      modelUrl,
+      productTableColumns,
       buildupData,
       combinedBuildup,
-      processedData,
+      selectedIndicatorKey,
+      selectedIndicators,    //not to have to refactor the side selector
+      selectedLifeCycles,
+      allRowIndices,
+
+      //indicator data for ease of use
+      selectedIndicatorLabel,
+      selectedIndicatorTotalImpact,
 
       // state manager
       isNewBuildup,
@@ -508,13 +581,21 @@ return {
       showDeleteConfirm,
 
       //methods
-      toggleSection,
       closeModal,
       saveBuildup,
       confirmDelete,
       cancelDelete,
       executeDelete,
-      handleMappedProductsUpdate
+
+      // state handlers methods
+      onMoreIndicatorsChanged,
+      onLifeCycleChanged,
+      handleProductQuantityUpdate,
+      handleProductsUpdate,
+
+      //selection handlers methods
+      onMappingElementSelected,
+      onModelSelect
 
     };
   }
@@ -522,9 +603,72 @@ return {
   </script>
   
   <style scoped>
+
+.small-size {
+  max-width: 3.5rem;
+}
+
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.quantity-input {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.page-content {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;   /* or 100% if parent has fixed height */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.mapping-item {
+  border: 1px solid var(--color-grey);
+  border-radius: var(--rad-small);
+  padding: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  background-color: var(--color-light);
+}
+
   .validation-error {
     color: var(--color-error);
     font-size: var(--font-size-small);
     margin-top: var(--spacing-tiny);
   }
+
+  .sidebar-header,
+.sidebar-body,
+.sidebar-footer {
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--spacing-sm);
+}
+
+.sidebar-header {
+  flex: 0 0 auto;          /* Sticks to top */
+}
+
+.sidebar-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  flex: 0 0 auto;    
+  margin-bottom: var(--spacing-sm);
+  margin-top: var(--spacing-sm)      /* Sticks to bottom */
+}
+
+.sidebar-body {
+  flex: 1 1 0;             /* Take up all available vertical space */
+  min-height: 0;           /* Needed for scrollbars to work in flexbox children */
+  overflow-y: auto;        /* Scroll vertically if content overflows */
+  gap: var(--spacing-sm);
+  display: flex;
+  flex-direction: column;
+
+  /* Optional: overflow-x: hidden; */
+}
   </style>

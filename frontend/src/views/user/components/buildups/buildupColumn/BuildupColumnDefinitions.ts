@@ -161,13 +161,13 @@ export const buildupColumns: ColumnDefinition[] = [
     	columnValues: []
 	},
 	{
-		key: 'user_created',
+		key: 'user_id_created',
 		label: 'Created By',
 		default: false,
 		visible: false,
 		tooltip: 'User who created the product',
 		columnProperties: { 
-			type: ColumnType.string,
+			type: ColumnType.numeric,
 			minWidth: 10,
 			maxWidth: 20,
 			defaultValue: null,
@@ -178,13 +178,13 @@ export const buildupColumns: ColumnDefinition[] = [
     	columnValues: []
 	},
 	{
-		key: 'user_updated',
+		key: 'user_id_updated',
 		label: 'Updated By',
 		default: false,
 		visible: false,
 		tooltip: 'User who last updated the product',
 		columnProperties: { 
-			type: ColumnType.string,
+			type: ColumnType.numeric,
 			minWidth: 10,
 			maxWidth: 20,
 			defaultValue: null,

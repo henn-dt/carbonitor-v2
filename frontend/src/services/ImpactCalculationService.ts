@@ -1,4 +1,4 @@
-import { inject, injectable } from "inversify";
+import { id, inject, injectable } from "inversify";
 import { TYPES } from "@/di/types";
 import type { IProductMappingService } from "@/services/IProductMappingService";
 import type { IImpactCalculationService } from "@/services/IImpactCalculationService";
@@ -108,23 +108,46 @@ export class ImpactCalculationService implements IImpactCalculationService {
     /**
    * Process products to add EPD objects and calculated impacts
    */
-    public processProducts<T extends { epdx: string | object }>(products: T[], quantities?:number[]): (T & IProductWithCalculatedImpacts)[] {
-        return products.map((product , index)=> {
-            // Get quantity for this product (default to 1 if not provided)
-            const quantity = quantities && quantities[index] !== undefined ? quantities[index] : 1;
-            // Parse EPD string or object to EPD object
+    public processProducts<T extends { epdx: string | object }>(
+        arg: [T, number?, string?, string?][] | T[]
+      ): (T & IProductWithCalculatedImpacts)[] {
+        // If first element is an array, and its first element is also array: it's the tuple form
+        if (
+          Array.isArray(arg) &&
+          arg.length > 0 &&
+          Array.isArray(arg[0])
+        ) {
+          // @ts-ignore TS can't know this type
+          return (arg as [T, number?, string?][]).map(([product, quantity, elementMapId, mappingId]) => {
+            const qty = quantity ?? 1;
+            const objMapId = elementMapId ?? undefined;
+            const mapId= mappingId ?? undefined;
             const epdObject = this.parseEpdString(product.epdx);
-            // Calculate impacts for the EPD
-            const calculatedImpacts = this.calculateImpacts(epdObject, quantity);
-            // Return the extended product object
+            const calculatedImpacts = this.calculateImpacts(epdObject, qty);
+      
             return {
-                ...product,
-                epdObject,
-                calculatedImpacts,
-                quantity
+              ...product,
+              epdObject,
+              calculatedImpacts,
+              quantity: qty,
+              elementMapId: objMapId,
+              mappingId : mapId
             };
+          });
+        }
+      
+        // Old-style: just array of T   to refactor later
+        return (arg as T[]).map((product) => {
+          const epdObject = this.parseEpdString(product.epdx);
+          const calculatedImpacts = this.calculateImpacts(epdObject, 1);
+          return {
+            ...product,
+            epdObject,
+            calculatedImpacts,
+            quantity: 1,
+          };
         });
-    }
+      }
 
 
     public async processSingleBuildupImpacts(buildup: IBuildup): Promise<IBuildupWithProcessedProducts> {
@@ -145,44 +168,44 @@ export class ImpactCalculationService implements IImpactCalculationService {
                 buildup.products, 
                 buildup.results
             );
-            
-            // Extract all products and their quantities from the mapped entities
-            const productsArray: IProduct[] = [];
-            const quantitiesArray: number[] = [];
-            
-            // Process mapped entities for single buildup
-            Object.values(mappedEntities).forEach(mappedEntitiesForGroup => {
-                mappedEntitiesForGroup.forEach(mappedEntity => {
-                    productsArray.push(mappedEntity.entity);
-                    quantitiesArray.push(mappedEntity.quantity);
-                });
-            });
+            const mappedEntitiesGrouped = mappedEntities;
+
+            type FlattenedForProcess = {
+                product: IProduct,
+                quantity: number,
+                elementMapId: string,     // was mappedEntity.elementMapId
+                mappingId: string      // this comes from the key in mappedEntities
+            };
+
+            const toProcess: FlattenedForProcess[] = [];
+            for (const [mappingId, mappedEntitiesForGroup] of Object.entries(mappedEntitiesGrouped)) {
+                for (const mappedEntity of mappedEntitiesForGroup) {
+                    toProcess.push({
+                        product: mappedEntity.entity,
+                        quantity: mappedEntity.quantity,
+                        elementMapId: mappedEntity.elementMapId,       // the product_id_x, *not* elementId
+                        mappingId                        // the mapping group
+                    });
+                }
+            }
             
             // Process the products with their quantities to calculate impacts
-            const processedProducts = this.processProducts(
-                productsArray,
-                quantitiesArray
-            );
+            const processedProducts = toProcess.map(({ product, quantity, elementMapId, mappingId }) => ({
+                ...product,
+                epdObject: this.parseEpdString(product.epdx),
+                calculatedImpacts: this.calculateImpacts(this.parseEpdString(product.epdx), quantity),
+                quantity,
+                elementMapId,    // original product key ("product_id_x")
+                mappingId     // group ("Stahlbeton")
+            }));
             
             // Convert the mappedEntities format to the new mappedProducts format
-            const mappedProducts: Record<string, (IProduct & IProductWithCalculatedImpacts)[]> = {};
-            
-            // Create a lookup map to find processed product by original product
-            const processedProductMap = new Map<IProduct, IProduct & IProductWithCalculatedImpacts>();
-            productsArray.forEach((product, index) => {
-                processedProductMap.set(product, processedProducts[index]);
-            });
-            
-            // Transform the mappedEntities into the mappedProducts format
-            Object.entries(mappedEntities).forEach(([mappingId, entitiesForGroup]) => {
-                mappedProducts[mappingId] = entitiesForGroup.map(mappedEntity => {
-                    const processedProduct = processedProductMap.get(mappedEntity.entity);
-                    if (!processedProduct) {
-                        throw new Error(`Could not find processed product for entity`);
-                    }
-                    return processedProduct;
-                });
-            });
+            const mappedProducts: Record<string, (IProduct & IProductWithCalculatedImpacts & { elementMapId: string, mappingId: string })[]> = {};
+
+            for (const processed of processedProducts) {
+                if (!mappedProducts[processed.mappingId]) mappedProducts[processed.mappingId] = [];
+                mappedProducts[processed.mappingId].push(processed);
+            }
             
             return {
                 id,

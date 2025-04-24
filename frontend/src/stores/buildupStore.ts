@@ -3,6 +3,9 @@ import { defineStore } from 'pinia';
 import type { IBuildup } from '@/types/buildup/IBuildup';
 import type { IBuildupState } from '@/types/buildup/IBuildupState';
 import type { IBuildupWithProcessedProducts } from '@/types/epdx/IBuildupWithProcessedProducts';
+import type { IProductWithCalculatedImpacts } from '@/types/epdx/IProductWithCalculatedImpacts';
+import type { IProduct } from '@/types/product/IProduct';
+import type { Unit, Standard, SubType } from 'lcax';
 
 export const useBuildupStore = defineStore('buildup', {
     state: (): IBuildupState => ({
@@ -11,6 +14,7 @@ export const useBuildupStore = defineStore('buildup', {
         loading: false,
         error: null,
         needsRefresh: true,
+        needsProcessing: true,
         lastFetchTimestamp: null,
         processedBuildups: [],
         processingStatus: {},
@@ -84,6 +88,10 @@ export const useBuildupStore = defineStore('buildup', {
             this.needsRefresh = needsRefresh;
         },
 
+        setNeedsProcessing(needsProcessing : boolean) {
+            this.needsProcessing = needsProcessing;
+        },
+
         setLastFetchTimestamp(timestamp: number | null) {
             this.lastFetchTimestamp = timestamp;
         },
@@ -115,7 +123,7 @@ export const useBuildupStore = defineStore('buildup', {
                 id: buildupId,
                 ...data
             };
-
+        
             if (existingIndex >= 0) {
                 // Update existing data
                 this.processedBuildups[existingIndex] = completeData;
@@ -143,6 +151,7 @@ export const useBuildupStore = defineStore('buildup', {
             this.loading = false;
             this.error = null;
             this.needsRefresh = true;
+            this.needsProcessing = true;
             this.lastFetchTimestamp = null;
             this.processedBuildups = [];
             this.processingStatus = {},
@@ -151,3 +160,5 @@ export const useBuildupStore = defineStore('buildup', {
         }
     }
 });
+
+

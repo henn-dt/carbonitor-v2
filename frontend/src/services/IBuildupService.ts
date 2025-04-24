@@ -2,6 +2,7 @@
 import type { IBuildup } from '@/types/buildup/IBuildup';
 
 export interface IBuildupService {
+
   getBuildups(): Promise<IBuildup[]>;
   getBuildupById(id: number): Promise<IBuildup>;
   createBuildup(buildup: Partial<IBuildup>): Promise<IBuildup>;

@@ -4,6 +4,7 @@ import './assets/style.css'
 import './assets/icons.css'
 import './assets/buttons.css'
 import './assets/table.css'
+import './assets/graphs.css'
 import 'reflect-metadata';
 
 import { createApp } from 'vue'

@@ -52,9 +52,26 @@
           </div>
           <button v-else @click="showDebugInfo = true" class="toggle-btn">Show Debug Info</button>
 
+  <!-- Graph Visualization Toggle -->
+  <div class="visualization-toggle">
+    <button 
+      @click="showGraph = !showGraph" 
+      class="toggle-btn"
+    >
+      {{ showGraph ? 'Hide' : 'Show' }} Graph Visualization
+    </button>
+  </div>
+  
+  <!-- Plotly Graph Component -->
+  <div v-if="showGraph" class="visualization-container">
+    <BuildupGraph
+      :precalculatedTable="precalculatedTable"
+      :filteredIndices="filteredBuildups"
+      :selectedIndices="selectedBuildups"
+    />
+  </div>
 
-
-        <div class ="container">
+        <div class ="table-container">
         <!-- Buildup Table -->
         <DataTable
           :precalculatedTable="precalculatedTable"
@@ -66,7 +83,6 @@
           @filtered-indices-changed="onFilteredIndicesChanged"
           @selection-changed="onSelectionChanged"
         >
-
         </DataTable>
 
 
@@ -113,6 +129,7 @@ import BuildupColumnSelector from '@/views/user/components/buildups/buildupColum
 import ImpactIndicatorSelector from '@/views/shared/ImpactIndicator/ImpactIndicatorSelector.vue';
 import LifeCycleSelector from '@/views/shared/LifeCycle/LifeCycleSelector.vue';
 import DataTable from '@/views/shared/DataTable/DataTable.vue';
+import BuildupGraph from '@/views/user/components/buildups/buildupGraph/BuildupGraph.vue';
 
 import SelectorBar from '@/views/shared/SelectorBar/SelectorBarSidebar.vue';
 import FilterBar from '@/views/shared/FilterBar/FilterBarSidebar.vue';
@@ -130,7 +147,7 @@ import type { IBuildup } from '@/types/buildup/IBuildup';
 
 import { getAllBuildupColumns } from '@/views/user/components/buildups/buildupColumn/BuildupColumnDefinitions';
 import BuildupsCommands from '@/views/user/components/buildups/BuildupsCommands.vue';
-import { getBuildupStore } from '@/stores/storeAccessor';
+import { getBuildupStore, getColorStore } from '@/stores/storeAccessor';
 import type { IBuildupWithProcessedProducts } from '@/types/epdx/IBuildupWithProcessedProducts';
 
 export default defineComponent({
@@ -144,6 +161,7 @@ export default defineComponent({
     BuildupColumnSelector,
     DataTable,
     BuildupsCommands,
+    BuildupGraph
   },
   setup() {
     const entityName = "buildup"
@@ -151,6 +169,8 @@ export default defineComponent({
     const buildupService = getBuildupService();
     const buildupProcessService = getBuildupProcessService()
     const buildupStore = getBuildupStore()
+
+    const colorStore = getColorStore()
     
     // State management
     const isProcessing = ref(false);
@@ -209,6 +229,10 @@ export default defineComponent({
       console.log("Parent: filteredBuildups changed:", newValue);
     }, { deep: true });
 
+    const mappings = computed<string[]>(() => Array.from(new Set(combinedBuildups.value.flatMap(b => Object.keys(b.mappedProducts)))))
+    watch(mappings, (newVal) => {
+        colorStore.setProductMappingsColors(newVal)
+          }, { immediate: true })
 
     // Initialize data
     const initializeData = async () => {
@@ -254,7 +278,7 @@ export default defineComponent({
         const buildupSubscription = buildupService.subscribeToBuildups(async (buildups) => {
           // Only trigger processing if we have buildups, aren't already processing,
           // and the store isn't in a loading state
-          if (buildups.length > 0 && !isProcessing.value && !isLoading.value) {
+          if (buildups.length > 0 && !isProcessing.value && !isLoading.value && buildupStore.needsProcessing) {
             console.log('Buildup Store changes detected, processing...');
             isProcessing.value = true;
             try {
@@ -309,10 +333,10 @@ export default defineComponent({
       console.log("Parent: Table updated filtered buildups:", filteredIndices);
       
       // Only update if actually changed to prevent loops
-      if (!arraysEqual(filteredBuildups.value, filteredIndices)) {
+/*       if (!arraysEqual(filteredBuildups.value, filteredIndices)) {
         filteredBuildups.value = filteredIndices;
         console.log("Parent: Updated filteredBuildups from table:", filteredBuildups.value);
-      }
+      } */
     };
 
     // Helper to compare arrays
@@ -338,8 +362,8 @@ export default defineComponent({
       error,
       entityName,
       entityNamePlural,
-      selectedBuildups: selectedBuildups,
-      filteredBuildups: filteredBuildups,
+      selectedBuildups,
+      filteredBuildups,
       collectedBuildups : buildups,
       selectedIndicators,
       selectedLifeCycles,
@@ -347,6 +371,7 @@ export default defineComponent({
       showDebugInfo,
       showVisualization,
       showGraph,
+
       precalculatedTable,
       
       // Methods

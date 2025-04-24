@@ -33,9 +33,13 @@ export class Buildup implements IBuildup {
       this.comment = dto.comment || "";
       this.quantity = dto.quantity;
       this.unit = dto.unit;
-      this.classification = this.classification = dto.classification ? (typeof dto.classification === 'string' ? JSON.parse(dto.classification) : dto.classification) : null;
+      this.classification = dto.classification;
       this.results = dto.results || null;
+      console.log('input meta_data')
+      console.log(dto.meta_data)
       this.metaData = dto.meta_data || null; // Notice conversion from snake_case to camelCase 
+      console.log('applied metaData')
+      console.log(this.metaData)
       this.products = dto.products || {};
     }
 }

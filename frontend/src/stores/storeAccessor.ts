@@ -4,8 +4,9 @@ import { useCategoryStore } from '@/stores/categoryStore';
 import { useUsersStore } from '@/stores/usersStore';
 import { useProductStore } from '@/stores/productStore';
 import { useBuildupStore } from '@/stores/buildupStore';
-import { useProductSnapshotStore } from '@/stores//productSnapshotStore';
-import { useUiModalStore } from './uiModalStore';
+import { useProductSnapshotStore } from '@/stores/productSnapshotStore';
+import { useUiModalStore } from '@/stores/uiModalStore';
+import { useColorStore } from '@/stores/colorStore';
 
 // Store singletons with proper typing
 let _authStore: ReturnType<typeof useAuthStore> | null = null;
@@ -15,6 +16,7 @@ let _productStore: ReturnType<typeof useProductStore> | null = null;
 let _productSnapshotStore : ReturnType<typeof useProductSnapshotStore> | null = null;
 let _buildupStore: ReturnType<typeof useBuildupStore> | null = null;
 let _uiModalStore: ReturnType<typeof useUiModalStore> | null = null;
+let _colorStore: ReturnType<typeof useColorStore> | null = null;
 
 export function initializeStores() {
   _authStore = useAuthStore();
@@ -24,6 +26,7 @@ export function initializeStores() {
   _buildupStore = useBuildupStore();
   _productSnapshotStore = useProductSnapshotStore();
   _uiModalStore = useUiModalStore()
+  _colorStore = useColorStore()
 }
 
 // Getters for each store with guaranteed non-null return
@@ -34,6 +37,15 @@ export function getAuthStore(): ReturnType<typeof useAuthStore> {
     console.log("[StoreAccessor] Using existing auth store");
   }
   return _authStore;
+}
+
+export function getColorStore(): ReturnType<typeof useColorStore> {
+  if (!_colorStore) {
+    _colorStore = useColorStore();
+  } else {
+    console.log("[StoreAccessor] Using existing color store");
+  }
+  return _colorStore;
 }
 
 export function getUiModalStore(): ReturnType<typeof useUiModalStore> {

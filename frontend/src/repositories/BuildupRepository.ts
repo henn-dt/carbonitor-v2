@@ -6,6 +6,7 @@ import type { IBuildup } from '@/types/buildup/IBuildup';
 import { inject, injectable } from 'inversify';
 import type { IHttpClient } from './IHttpClient';
 import { TYPES } from '@/di/types';
+import type { BuildupToBackend } from '@/types/buildup/BuildupToBackend';
 
 
 @injectable()
@@ -49,7 +50,7 @@ export class BuildupRepository extends BaseRepository implements IBuildupReposit
         }
     }
 
-    async createBuildup(buildup: Partial<IBuildup>): Promise<IBuildup> {
+    async createBuildup(buildup: Partial<BuildupToBackend>): Promise<IBuildup> {
         try {
             const { data } = await this.axios.post<IBuildup>(this.buildupUrl, buildup);
             return data;
@@ -59,17 +60,10 @@ export class BuildupRepository extends BaseRepository implements IBuildupReposit
         }
     }
 
-    async updateBuildup(id: number, buildup: Partial<IBuildup>): Promise<IBuildup> {
+    async updateBuildup(id: number, buildup: Partial<BuildupToBackend>): Promise<IBuildup> {
         try {
         // Create a copy to work with
         const processedBuildup = { ...buildup };
-        
-        // If classification exists, convert it to a JSON string
-        if (processedBuildup.classification) {
-            const classificationObj = JSON.stringify(processedBuildup.classification);
-            (processedBuildup as any).classification_json = classificationObj;
-            delete processedBuildup.classification;
-        }
         
         const { data } = await this.axios.put<IBuildup>(`${this.buildupUrl}${id}`, processedBuildup);
             return data;

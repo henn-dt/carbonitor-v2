@@ -1,148 +1,123 @@
 <template>
-    <div class="lifecycle-comparison-chart">
-      <div class="controls">
-        <div class="control-row">
-          <!-- X-Axis (string columns only) -->
-          <div class="control-group">
-            <label for="xAxis">Product Name:</label>
-            <select 
-              id="xAxis"
-              v-model="xAxisColumn"
+  <div class="lifecycle-comparison-chart">
+    <div class="controls">
+      <div class="control-row">
+        <!-- X-Axis (string columns only) -->
+        <div class="control-group">
+          <label for="xAxis">Product Name:</label>
+          <select 
+            id="xAxis"
+            v-model="xAxisColumn"
+          >
+            <option 
+              v-for="col in availableStringColumns" 
+              :key="col.key" 
+              :value="col.key"
             >
-              <option 
-                v-for="col in availableStringColumns" 
-                :key="col.key" 
-                :value="col.key"
-              >
-                {{ col.label }}
-              </option>
-            </select>
-          </div>
-          
-          <!-- Indicator Column (Total columns only) -->
-          <div class="control-group">
-            <label for="indicator">Impact Indicator:</label>
-            <select 
-              id="indicator"
-              v-model="indicatorColumn"
-            >
-              <option 
-                v-for="col in availableTotalColumns" 
-                :key="col.key" 
-                :value="col.key"
-              >
-                {{ col.label }}
-              </option>
-            </select>
-          </div>
+              {{ col.label }}
+            </option>
+          </select>
         </div>
         
-        <div class="control-row">
-          <!-- Include EndOfLife Toggle -->
-          <div class="control-group checkbox-group">
-            <input 
-              type="checkbox" 
-              id="includeEndOfLife" 
-              v-model="includeEndOfLife"
-            >
-            <label for="includeEndOfLife">Compare with/without EndOfLife (C3)</label>
-          </div>
+        <!-- Removed Impact Indicator dropdown -->
+      </div>
+      
+      <div class="control-row">
+        <!-- Include EndOfLife Toggle -->
+        <div class="control-group checkbox-group">
+          <input 
+            type="checkbox" 
+            id="includeEndOfLife" 
+            v-model="includeEndOfLife"
+          >
+          <label for="includeEndOfLife">Compare with/without EndOfLife (C3)</label>
         </div>
       </div>
-      
-      <div ref="graphContainer" class="graph-container">
-        <!-- Plotly will render here -->
-      </div>
     </div>
-  </template>
-  
-  <script lang="ts">
-  import { defineComponent, ref, computed, watch, onMounted } from 'vue';
-  import type { ColumnDefinition } from '@/views/shared/ColumnSelector/ColumnDefinition';
-  import { useLifeCycleComparisonChart } from '@/views/shared/Graph/useLifeCycleComparisonChart';
-  import { useColumnUtils } from '@/views/shared/Graph/useColumnUtils';
-  
-  export default defineComponent({
-    name: 'LifeCycleComparisonChart',
-    props: {
-      precalculatedTable: {
-        type: Array as () => ColumnDefinition[],
-        required: true
-      },
-      selectedIndices: {
-        type: Array as () => number[],
-        required: true
-      }
+    
+    <div ref="graphContainer" class="graph-container">
+      <!-- Plotly will render here -->
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
+import { defineComponent, ref, computed, watch, onMounted } from 'vue';
+import type { ColumnDefinition } from '@/views/shared/ColumnSelector/ColumnDefinition';
+import { useLifeCycleComparisonChart } from './useLifeCycleComparisonChart';
+import { useColumnUtils } from '@/views/shared/Graph/useColumnUtils';
+
+export default defineComponent({
+  name: 'LifeCycleComparisonChart',
+  props: {
+    precalculatedTable: {
+      type: Array as () => ColumnDefinition[],
+      required: true
     },
-    setup(props) {
-      // DOM reference
-      const graphContainer = ref<HTMLElement | null>(null);
-      
-      // Control state
-      const xAxisColumn = ref<string>('epd_name'); // Default to product name
-      const indicatorColumn = ref<string>('gwp-Total'); // Default to GWP total
-      const includeEndOfLife = ref<boolean>(true); // Default to including EndOfLife comparison
-      
-      // Get column utilities
-      const { 
-        availableColumns,
-        availableStringColumns
-      } = useColumnUtils(props);
-      
-      // Filter to only get Total columns for indicators
-      const availableTotalColumns = computed<ColumnDefinition[]>(() => {
-        return props.precalculatedTable.filter(col => 
-          col.key.includes('-Total') && 
-          col.visible === true
-        );
-      });
-      
-      // Create the chart generator
-      const { generateLifeCycleComparisonChart } = useLifeCycleComparisonChart(
-        props,
-        graphContainer,
-        {
-          xAxisColumn,
-          indicatorColumn,
-          includeEndOfLife
-        }
-      );
-      
-      // Watch for changes to redraw the chart
-      watch(
-        [
-          xAxisColumn,
-          indicatorColumn,
-          includeEndOfLife,
-          () => props.selectedIndices
-        ],
-        () => {
-          if (props.selectedIndices.length > 0) {
-            generateLifeCycleComparisonChart();
-          }
-        },
-        { deep: true }
-      );
-      
-      // Initialize the component
-      onMounted(() => {
-        // Check if we already have selected indices to display
+    selectedIndices: {
+      type: Array as () => number[],
+      required: true
+    }
+  },
+  setup(props) {
+    // DOM reference
+    const graphContainer = ref<HTMLElement | null>(null);
+    
+    // Control state
+    const xAxisColumn = ref<string>('epd_name'); // Default to product name
+    // Fixed to GWP - no longer using dropdown
+    const indicatorColumn = ref<string>('gwp-Total'); 
+    const includeEndOfLife = ref<boolean>(true); // Default to including EndOfLife comparison
+    
+    // Get column utilities
+    const { 
+      availableColumns,
+      availableStringColumns
+    } = useColumnUtils(props);
+    
+    // Create the chart generator
+    const { generateLifeCycleComparisonChart } = useLifeCycleComparisonChart(
+      props,
+      graphContainer,
+      {
+        xAxisColumn,
+        indicatorColumn,
+        includeEndOfLife
+      }
+    );
+    
+    // Watch for changes to redraw the chart
+    watch(
+      [
+        xAxisColumn,
+        includeEndOfLife,
+        () => props.selectedIndices
+      ],
+      () => {
         if (props.selectedIndices.length > 0) {
           generateLifeCycleComparisonChart();
         }
-      });
-      
-      return {
-        graphContainer,
-        xAxisColumn,
-        indicatorColumn,
-        includeEndOfLife,
-        availableColumns,
-        availableStringColumns,
-        availableTotalColumns
-      };
-    }
-  });
+      },
+      { deep: true }
+    );
+    
+    // Initialize the component
+    onMounted(() => {
+      // Check if we already have selected indices to display
+      if (props.selectedIndices.length > 0) {
+        generateLifeCycleComparisonChart();
+      }
+    });
+    
+    return {
+      graphContainer,
+      xAxisColumn,
+      includeEndOfLife,
+      availableColumns,
+      availableStringColumns
+    };
+  }
+});
 </script>
   
 <style scoped>

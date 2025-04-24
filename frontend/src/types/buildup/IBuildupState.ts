@@ -8,6 +8,7 @@ export interface IBuildupState {
     loading: boolean;
     error: string | null;
     needsRefresh: boolean;
+    needsProcessing: boolean;
     lastFetchTimestamp: number | null;
 
     processedBuildups: IBuildupWithProcessedProducts[],
