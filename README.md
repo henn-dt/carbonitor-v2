@@ -6,14 +6,17 @@ For quick start and advanced setup check the [Docs](https://henn-ds.notion.site/
 
 Currently in WIP
 
-|---------------|-------------------|----------------|-----------------|
-| **Backend**   | infrastructure ✅ | interfaces ✅  | services ✅     |
-| **Frontend**  | stores ✅         | interfaces ✅  | presentation ✅ |
-| **Core services** | db ✅           | login registr. ✅ | permissions ✅ |
-|               | user roles ✅     | project roles  | file server     |
-| **App modules** | products 🚧       | buildups 🚧    | models          |
-|               | categories 🚧     | projects       | share views     |
-| **Revit plugin**  | hybrid setup ✅   | web request ✅  | login ✅        |
-|               | filters 🚧        | buildups       | models          |
+| Backend        | infrastructure ✅ | interfaces ✅  | services ✅     |
+| Frontend       | stores ✅         | interfaces ✅  | presentation ✅ |
+| Core services  | db ✅           | login registr. ✅ | permissions ✅ |
+|                | user roles ✅     | project roles  | file server     |
+| App modules    | products 🚧       | buildups 🚧    | models          |
+|                | categories 🚧     | projects       | share views     |
+| Revit plugin   | hybrid setup ✅   | web request ✅  | login ✅        |
+|                | filters 🚧        | buildups       | models          |
 
+✅ completed
+🚧 work in progress
+[ ] planned
 
+Revit Plugin and Grasshopper package are coming as a separate repo. stay tuned!
